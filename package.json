@@ -1,0 +1,26 @@
+{
+  "name": "heliochronicles",
+  "version": "0.1.0",
+  "description": "Three centuries of space weather, in one repo.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:silso": "node scripts/build.mjs silso",
+    "build:gfz": "node scripts/build.mjs gfz",
+    "validate": "node scripts/validate.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/etelford32/heliochronicles.git"
+  },
+  "license": "MIT",
+  "author": "Elliot Telford",
+  "bugs": {
+    "url": "https://github.com/etelford32/heliochronicles/issues"
+  },
+  "homepage": "https://github.com/etelford32/heliochronicles#readme"
+}

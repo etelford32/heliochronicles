@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/etelford32/heliochronicles/schemas/daily.schema.json",
+  "title": "HelioChronicles Daily Record",
+  "description": "One row per calendar day. Columns are union across sources; null when a given source does not cover that date.",
+  "type": "object",
+  "required": ["date"],
+  "additionalProperties": false,
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO-8601 calendar date, UTC. Primary key."
+    },
+    "decimal_year": {
+      "type": "number",
+      "minimum": 1700,
+      "maximum": 2200,
+      "description": "Fractional year at mid-day, copied from SILSO for SSN-era rows."
+    },
+    "ssn": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Daily total sunspot number (SILSO V2.0). Null if no observations that day."
+    },
+    "ssn_stddev": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Daily standard deviation of the individual station SSN values. Null when unavailable."
+    },
+    "ssn_nobs": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Number of stations contributing to the daily SSN."
+    },
+    "ssn_definitive": {
+      "type": ["boolean", "null"],
+      "description": "True if SILSO marks this value as definitive; false if provisional (subject to revision)."
+    },
+    "kp_sum": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 72,
+      "description": "Sum of the 8 three-hour Kp values for the day (0.0 to 72.0 in thirds)."
+    },
+    "ap_daily": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "GFZ Ap daily average (linear ap scale, nT)."
+    }
+  }
+}
