@@ -127,22 +127,31 @@ SC25 began at the 2019-12 minimum; the published smoothed maximum is 2024-08, wi
 
 ## Notable historical storms and events
 
-14 hand-curated events span 1859-09-01 to 2024-10-11. Each is documented in peer-reviewed literature or official agency reports; see `data/events/historical_storms.json` for the full `sources` list on every entry.
+23 hand-curated events span 1859-09-01 to 2024-10-11. Each is documented in peer-reviewed literature or official agency reports; see `data/events/historical_storms.json` for the full `sources` list on every entry.
 
 | Date(s) | Event | Cycle | Peak flare | Dst (nT) | Src | G-scale | Lowest aurora lat. |
 |:-------:|:------|:-----:|:-----------|---------:|:---:|:-------:|:------------------:|
 | 1859-09-01 – 1859-09-02 | Carrington Event | SC10 | X45± | -900 | R | — | 23° |
 | 1872-02-04 | Great Magnetic Storm of February 1872 | SC11 | — | -830 | R | — | 20° |
+| 1882-11-17 – 1882-11-18 | November 1882 Great Aurora | SC12 | — | -386 | R | — | 22° |
+| 1909-09-25 – 1909-09-26 | September 1909 Storm | SC14 | — | -595 | R | — | 33° |
 | 1921-05-13 – 1921-05-15 | New York Railroad Storm | SC15 | — | -907 | R | — | 25° |
 | 1940-03-24 – 1940-03-25 | Easter Sunday Storm | SC17 | — | -389 | R | — | 30° |
+| 1941-09-18 – 1941-09-19 | September 1941 Storm | SC17 | — | -450 | R | — | 30° |
 | 1956-02-23 | 23 February 1956 Ground-Level Enhancement | SC19 | X∞ | — | — | — | — |
+| 1958-02-11 | Great Aurora of February 1958 | SC19 | — | -427 | M | — | 30° |
+| 1967-05-25 – 1967-05-26 | Memorial Day Storm (May 1967) | SC20 | X7+ | -387 | M | — | 35° |
 | 1972-08-02 – 1972-08-11 | August 1972 Event | SC20 | X5+ | -125 | M | — | 35° |
 | 1989-03-10 – 1989-03-14 | Quebec Blackout Storm | SC22 | X4.5 | -589 | M | G5 | 25° |
 | 2000-07-14 – 2000-07-16 | Bastille Day Event | SC23 | X5.7 | -301 | M | G5 | 35° |
 | 2003-10-19 – 2003-11-07 | Halloween Storms | SC23 | X28+ | -383 | M | G5 | 28° |
+| 2004-11-07 – 2004-11-10 | November 2004 Storms | SC23 | X2.0 | -373 | M | G5 | 32° |
 | 2005-09-07 – 2005-09-13 | September 2005 X17 Flare Series | SC23 | X17 | -139 | M | G4 | 40° |
 | 2012-07-23 | July 2012 Near-Miss CME | SC24 | X2.5+ | -1200 | H | — | — |
+| 2015-03-17 – 2015-03-18 | St. Patrick's Day Storm (March 2015) | SC24 | M1.0 | -222 | M | G4 | 37° |
 | 2017-09-06 – 2017-09-10 | September 2017 Flares and Storm | SC24 | X9.3 | -142 | M | G4 | 40° |
+| 2022-02-03 – 2022-02-04 | February 2022 Starlink Storm | SC25 | M1.1 | -66 | M | G2 | 52° |
+| 2023-04-23 – 2023-04-24 | April 2023 G4 Storm | SC25 | M1.7 | -213 | M | G4 | 35° |
 | 2024-05-10 – 2024-05-12 | Gannon Storm (Mother's Day Storm) | SC25 | X5.8 | -412 | M | G5 | 26° |
 | 2024-10-10 – 2024-10-11 | October 2024 G4 Storm | SC25 | X1.8 | -335 | M | G4 | 30° |
 
@@ -152,14 +161,16 @@ _Src legend — **M** = measured (Kyoto WDC, 1957+); **R** = reconstructed from 
 
 - **SC10** (1 event): Carrington Event
 - **SC11** (1 event): Great Magnetic Storm of February 1872
+- **SC12** (1 event): November 1882 Great Aurora
+- **SC14** (1 event): September 1909 Storm
 - **SC15** (1 event): New York Railroad Storm
-- **SC17** (1 event): Easter Sunday Storm
-- **SC19** (1 event): 23 February 1956 Ground-Level Enhancement
-- **SC20** (1 event): August 1972 Event
+- **SC17** (2 events): Easter Sunday Storm; September 1941 Storm
+- **SC19** (2 events): 23 February 1956 Ground-Level Enhancement; Great Aurora of February 1958
+- **SC20** (2 events): Memorial Day Storm (May 1967); August 1972 Event
 - **SC22** (1 event): Quebec Blackout Storm
-- **SC23** (3 events): Bastille Day Event; Halloween Storms; September 2005 X17 Flare Series
-- **SC24** (2 events): July 2012 Near-Miss CME; September 2017 Flares and Storm
-- **SC25** (2 events): Gannon Storm (Mother's Day Storm); October 2024 G4 Storm
+- **SC23** (4 events): Bastille Day Event; Halloween Storms; November 2004 Storms; September 2005 X17 Flare Series
+- **SC24** (3 events): July 2012 Near-Miss CME; St. Patrick's Day Storm (March 2015); September 2017 Flares and Storm
+- **SC25** (4 events): February 2022 Starlink Storm; April 2023 G4 Storm; Gannon Storm (Mother's Day Storm); October 2024 G4 Storm
 
 ### Carrington-class and near-Carrington events
 
@@ -187,14 +198,23 @@ _Src legend — **M** = measured (Kyoto WDC, 1957+); **R** = reconstructed from 
 | **AR 13664** | SC25 | 2024-05-01 → 2024-05-14 | beta-gamma-delta | 2500 | X5.8 | Gannon Storm (Mother's Day Storm) |
 | **AR 13848** | SC25 | 2024-09-27 → 2024-10-10 | beta-gamma | 900 | X1.8 | October 2024 G4 Storm |
 
-**Events without a linked source region (6):**
+**Events without a linked source region (15):**
 
 - **Carrington Event** (1859-09-01): pre-NOAA numbering scheme.
 - **Great Magnetic Storm of February 1872** (1872-02-04): pre-NOAA numbering scheme.
+- **November 1882 Great Aurora** (1882-11-17): pre-NOAA numbering scheme.
+- **September 1909 Storm** (1909-09-25): pre-NOAA numbering scheme.
 - **New York Railroad Storm** (1921-05-13): pre-NOAA numbering scheme.
 - **Easter Sunday Storm** (1940-03-24): pre-NOAA numbering scheme.
+- **September 1941 Storm** (1941-09-18): pre-NOAA numbering scheme.
 - **23 February 1956 Ground-Level Enhancement** (1956-02-23): pre-NOAA numbering scheme.
+- **Great Aurora of February 1958** (1958-02-11): pre-NOAA numbering scheme.
+- **Memorial Day Storm (May 1967)** (1967-05-25): pre-NOAA numbering scheme.
+- **November 2004 Storms** (2004-11-07): source region ambiguous.
 - **July 2012 Near-Miss CME** (2012-07-23): CME originated from a backside region at time of ejection.
+- **St. Patrick's Day Storm (March 2015)** (2015-03-17): source region ambiguous.
+- **February 2022 Starlink Storm** (2022-02-03): source region ambiguous.
+- **April 2023 G4 Storm** (2023-04-23): source region ambiguous.
 
 ---
 

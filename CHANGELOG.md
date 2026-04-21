@@ -10,6 +10,27 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-04-21
+
+### Added — 9 more historical storms
+
+Catalog expanded from 14 → 23 storms. Every new entry cites peer-reviewed literature.
+
+- **November 1882** — reconstructed Dst −386 nT. Global aurora, Mumbai and Havana among low-latitude reports. Silverman 2006, Cliver & Svalgaard 2004.
+- **September 1909** — reconstructed Dst −595 nT. Love (2018) reconstruction from Potsdam/Seddin magnetograms; comparable to Quebec 1989.
+- **September 1941** — reconstructed Dst −450 nT. Transatlantic HF blackout during WWII mobilization. Love & Coïsson 2016.
+- **February 1958 Great Aurora** — measured Dst −427 nT (early Dst era). One of the last great aurora displays of the pre-Space-Age; visible across Mexico and the Caribbean. Rassoul et al. 1993.
+- **Memorial Day Storm (May 1967)** — measured Dst −387 nT. Disabled BMEWS radars, nearly triggered a nuclear-response escalation before solar cause was identified. Knipp et al. 2016.
+- **November 2004 Storms** — measured Dst −373 nT. Second-deepest measured storm of SC23 after Halloween 2003. Lopez et al. 2007.
+- **St. Patrick's Day Storm (March 2015)** — measured Dst −222 nT. Largest storm of SC24; first G4 comprehensively observed across GPS positioning systems. Jacobsen & Andalsvik 2016.
+- **February 2022 Starlink Storm** — measured Dst −66 nT. Moderate G2 but thermospheric drag spike killed 38 of 49 newly-launched Starlink satellites; first mass commercial-satellite loss attributed to space weather. Hapgood 2022, Fang 2022.
+- **April 2023 G4 Storm** — measured Dst −213 nT. First G4 of cycle 25, precursor to the Gannon event.
+
+### Changed
+
+- `docs/charts/storm-waterfall.svg` regenerated with 22 plotted bars (one storm, the 1956 GLE, carries `dst_nT: null` and is not shown).
+- `docs/ANALYSIS.md` regenerated. Storm count per cycle now reflects the fuller catalog — SC14 (+1), SC17 (+1), SC19 (+1), SC20 (+1), SC23 (+1), SC24 (+1), SC25 (+2) all gain entries.
+
 ## [0.10.2] - 2026-04-21
 
 ### Fixed — storm waterfall chart
@@ -279,7 +300,8 @@ Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.10.2...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.11.0
 [0.10.2]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.2
 [0.10.1]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.1
 [0.10.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.0
