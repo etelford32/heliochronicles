@@ -10,6 +10,24 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-04-21
+
+### Fixed — storm waterfall chart
+
+`docs/charts/storm-waterfall.svg` redesigned with the same layout discipline as the hero: every y-coordinate declared as a named constant, no text inside the plot area, bars carry `<title>` hover tooltips only, and the five deepest storms surface in a caption strip below the chart rather than as on-chart leader-line labels that could collide.
+
+Specific changes from the prior version:
+
+- Removed the zig-zagging in-chart labels for the top-5 events — they previously risked collisions with the title and legend. Names and Dst values now appear in a single "Deepest 5:" caption line below the x-axis.
+- Short-name map (`1859 Carrington`, `1921 NY Railroad`, `2012 near-miss`, …) keeps the deepest-5 caption to one line at 11 px.
+- Gannon supplementary callout removed (the waterfall shows Gannon's bar directly; the "first G5 since Halloween 2003" narrative moves entirely to the README caption).
+- Severity thresholds (G3/G4/G5/Carrington-class) moved to a reserved right-margin strip; dashed gridlines unchanged.
+- Meta strip above the plot summarizes counts by `dst_source` (measured / reconstructed / hypothetical) so the color coding is legible before reading the legend.
+- Legend strip stays horizontal along a single line below the x-axis with explicit counts.
+- Footer caption documents the pre-1957 reconstruction caveat and where to find per-event sources.
+
+All element gaps ≥ 18 px; widths audited against 1044 px available chart width.
+
 ## [0.10.1] - 2026-04-21
 
 ### Fixed — hero chart
@@ -261,7 +279,8 @@ Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.10.2...HEAD
+[0.10.2]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.2
 [0.10.1]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.1
 [0.10.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.0
 [0.9.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.9.0
