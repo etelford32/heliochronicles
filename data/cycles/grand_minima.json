@@ -1,0 +1,98 @@
+{
+  "_schema": "Grand solar minima — prolonged periods of reduced solar activity. Telescopic minima (Maunder, Dalton) are derived from direct sunspot observation; pre-telescopic minima are reconstructed from cosmogenic isotope records (14C in tree rings, 10Be in ice cores). Date ranges are approximate, from the cited reconstructions. Detection methods differ, so endpoint precision varies by order of magnitude. Curator: HelioChronicles. Last reviewed 2026-04.",
+  "_fields": {
+    "id":              "stable slug",
+    "name":            "common name used in solar-physics literature",
+    "start_year":      "approximate start year (CE; negative = BCE)",
+    "end_year":        "approximate end year (CE)",
+    "duration_years":  "approximate duration",
+    "mean_ssn_est":    "estimated mean SSN during the minimum (null where no reconstruction is agreed on)",
+    "detection":       "telescopic | cosmogenic | historical-auroral",
+    "significance":    "one-sentence rationale",
+    "sources":         "references for the dates and characterization"
+  },
+  "minima": [
+    {
+      "id": "oort",
+      "name": "Oort Minimum",
+      "start_year": 1010,
+      "end_year": 1050,
+      "duration_years": 40,
+      "mean_ssn_est": null,
+      "detection": "cosmogenic",
+      "significance": "Earliest well-identified grand minimum in the Holocene record; confirmed through 10Be and 14C excursions.",
+      "sources": [
+        { "citation": "Usoskin, I. G. (2023). A history of solar activity over millennia. Living Rev. Solar Phys. 20, 2.", "doi": "10.1007/s41116-023-00036-z" }
+      ]
+    },
+    {
+      "id": "wolf",
+      "name": "Wolf Minimum",
+      "start_year": 1280,
+      "end_year": 1350,
+      "duration_years": 70,
+      "mean_ssn_est": null,
+      "detection": "cosmogenic",
+      "significance": "Coincides with the onset of Europe's Little Ice Age; contribution of solar forcing vs. volcanic forcing still debated.",
+      "sources": [
+        { "citation": "Usoskin, I. G. (2023). A history of solar activity over millennia. Living Rev. Solar Phys. 20, 2.", "doi": "10.1007/s41116-023-00036-z" }
+      ]
+    },
+    {
+      "id": "sporer",
+      "name": "Spörer Minimum",
+      "start_year": 1460,
+      "end_year": 1550,
+      "duration_years": 90,
+      "mean_ssn_est": null,
+      "detection": "cosmogenic",
+      "significance": "Longer and arguably deeper than the Maunder Minimum, but pre-telescopic — known only through cosmogenic isotope anomalies.",
+      "sources": [
+        { "citation": "Eddy, J. A. (1976). The Maunder Minimum. Science 192, 1189–1202.", "doi": "10.1126/science.192.4245.1189" },
+        { "citation": "Miyahara, H. et al. (2006). Cyclicity of solar activity during the Maunder Minimum deduced from radiocarbon content. Solar Phys. 235, 413.", "doi": "10.1007/s11207-006-0029-1" }
+      ]
+    },
+    {
+      "id": "maunder",
+      "name": "Maunder Minimum",
+      "start_year": 1645,
+      "end_year": 1715,
+      "duration_years": 70,
+      "mean_ssn_est": 8,
+      "detection": "telescopic",
+      "significance": "The canonical grand minimum. Fewer sunspots observed in 70 years than in a single recent active year. Coincides with the deepest phase of the Little Ice Age.",
+      "sources": [
+        { "citation": "Eddy, J. A. (1976). The Maunder Minimum. Science 192, 1189–1202.", "doi": "10.1126/science.192.4245.1189" },
+        { "citation": "Hoyt, D. V. & Schatten, K. H. (1998). Group Sunspot Numbers: A new solar activity reconstruction. Solar Phys. 179, 189.", "doi": "10.1023/A:1005007527816" },
+        { "citation": "Vaquero, J. M. et al. (2015). A revised collection of sunspot group numbers. Solar Phys. 291, 3061.", "doi": "10.1007/s11207-015-0711-2" }
+      ]
+    },
+    {
+      "id": "dalton",
+      "name": "Dalton Minimum",
+      "start_year": 1790,
+      "end_year": 1830,
+      "duration_years": 40,
+      "mean_ssn_est": 41,
+      "detection": "telescopic",
+      "significance": "Three consecutive weak cycles (SC5, SC6, SC7). Unambiguous in the SILSO daily record — peaks SSN 82, 81, 119 vs. a long-run mean near 180.",
+      "sources": [
+        { "citation": "SIDC-SILSO daily sunspot number record, 1818+.", "url": "https://www.sidc.be/SILSO" },
+        { "citation": "Clette, F. & Lefèvre, L. (2016). The New Sunspot Number: assembling all corrections. Solar Phys. 291, 2629.", "doi": "10.1007/s11207-016-1014-y" }
+      ]
+    },
+    {
+      "id": "gleissberg-1900",
+      "name": "Gleissberg Minimum (c. 1890–1920)",
+      "start_year": 1890,
+      "end_year": 1920,
+      "duration_years": 30,
+      "mean_ssn_est": 60,
+      "detection": "telescopic",
+      "significance": "A milder secular minimum associated with the ~88-year Gleissberg cycle; weaker than Dalton but clearly depressed compared to the 20th-century mean.",
+      "sources": [
+        { "citation": "Feynman, J. & Ruzmaikin, A. (2011). The Sun's Strange Behavior: Maunder Minimum or Gleissberg Cycle? Solar Phys. 272, 351.", "doi": "10.1007/s11207-011-9828-0" }
+      ]
+    }
+  ]
+}

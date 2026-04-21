@@ -54,10 +54,48 @@ Solar cycle boundaries and peak amplitudes from SIDC-SILSO's published cycle tab
 | `duration_years`   | number  | `min_end` – `min_start` in years, to one decimal                  |
 | `provisional`      | bool    | `true` for the current cycle (boundaries not yet finalized)       |
 
+### `data/cycles/grand_minima.json`
+
+Grand solar minima — prolonged periods of reduced activity, some pre-telescopic. Telescopic minima (Maunder, Dalton, Gleissberg) are derived from direct sunspot observation; pre-telescopic minima (Oort, Wolf, Spörer) are reconstructed from cosmogenic isotope records (¹⁴C in tree rings, ¹⁰Be in ice cores). See `_schema` and `_fields` in the file itself.
+
+| field             | type    | description                                                            |
+|-------------------|---------|------------------------------------------------------------------------|
+| `id`              | string  | Stable slug (e.g. `maunder`, `dalton`)                                 |
+| `name`            | string  | Common name used in solar-physics literature                           |
+| `start_year`      | int     | Approximate start year (CE)                                            |
+| `end_year`        | int     | Approximate end year (CE)                                              |
+| `duration_years`  | int     | Approximate duration                                                   |
+| `mean_ssn_est`    | number  | Estimated mean SSN during the minimum; `null` where no reconstruction is agreed on |
+| `detection`       | string  | `telescopic`, `cosmogenic`, or `historical-auroral`                    |
+| `significance`    | string  | One-sentence rationale                                                 |
+| `sources`         | array   | Citations for dates and characterization                               |
+
+### `data/events/historical_storms.json`
+
+Hand-curated catalog of major documented solar and geomagnetic events, 1859–present. Each entry cites peer-reviewed literature or official agency reports; see the `_schema` and `_fields` self-description in the file itself and `data/events/README.md` for curation criteria.
+
+| field               | type         | description                                                          |
+|---------------------|--------------|----------------------------------------------------------------------|
+| `id`                | string       | Stable slug (e.g. `carrington-1859`, `gannon-2024`)                  |
+| `name`              | string       | Common name used in literature                                       |
+| `date_start`        | date (ISO)   | Onset date (UTC)                                                     |
+| `date_end`          | date (ISO)   | Primary-storm end date; same as start for single-day events          |
+| `type`              | enum         | `storm`, `flare`, `cme`, `gle`, `carrington-class`                   |
+| `flare_class_peak`  | string\|null | X-ray class of the driving/associated flare (e.g. `X9.3`); `null` pre-satellite |
+| `dst_nT_est`        | int\|null    | Estimated minimum Dst in nT (negative); `null` where no data exists  |
+| `storm_scale`       | string\|null | NOAA G-scale (`G1`–`G5`); `null` for events outside the modern scale |
+| `aurora_lat_deg`    | number\|null | Lowest reported geomagnetic latitude of visible aurora               |
+| `cycle`             | int          | Solar cycle number at the time of the event                          |
+| `significance`      | string       | One-sentence plain-English rationale for inclusion                   |
+| `effects`           | array        | List of documented real-world effects                                |
+| `sources`           | array        | Citations — papers, agency reports, observational logs               |
+
 ## File layout
 
 - `data/daily/daily_YYYY-YYYY.csv` — 50-year CSV chunks of the daily table.
-- `data/cycles/solar_cycles.json` — curated cycle table.
+- `data/cycles/solar_cycles.json` — curated numbered-cycle table (1755+).
+- `data/cycles/grand_minima.json` — curated grand solar minima, including pre-instrumental reconstructions.
+- `data/events/historical_storms.json` — hand-curated catalog of notable storms and events (1859+).
 - `data/MANIFEST.json` — per-file SHA-256, row count, last-updated timestamp.
 
 No external schema contract is imposed. This document is the spec; `scripts/validate.mjs` checks that the CSV headers match this column list in order and that dates are monotonic and well-formed.

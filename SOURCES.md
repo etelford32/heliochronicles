@@ -37,6 +37,30 @@ contributed to that row, using the tokens in the "Source token" fields below.
 - **Format in this repo:** `data/cycles/solar_cycles.json`, hand-authored from the SIDC-SILSO table. Updated only when a new cycle minimum is officially declared (roughly every 11 years).
 - **License:** CC BY-NC 4.0 (follows SILSO's terms on the derived cycle table).
 
+## Grand solar minima (pre-instrumental to 1920)
+
+- **Format in this repo:** `data/cycles/grand_minima.json`, hand-authored from the peer-reviewed literature cited on each entry.
+- **Primary references:**
+  - Eddy, J. A. (1976). *The Maunder Minimum.* Science 192, 1189–1202. doi:10.1126/science.192.4245.1189
+  - Usoskin, I. G. (2023). *A history of solar activity over millennia.* Living Reviews in Solar Physics 20, 2. doi:10.1007/s41116-023-00036-z
+  - Clette, F. & Lefèvre, L. (2016). *The New Sunspot Number: assembling all corrections.* Solar Physics 291, 2629. doi:10.1007/s11207-016-1014-y
+  - Vaquero, J. M. et al. (2015). *A revised collection of sunspot group numbers.* Solar Physics 291, 3061. doi:10.1007/s11207-015-0711-2
+  - Feynman, J. & Ruzmaikin, A. (2011). *The Sun's Strange Behavior: Maunder Minimum or Gleissberg Cycle?* Solar Physics 272, 351. doi:10.1007/s11207-011-9828-0
+- **License:** CC BY 4.0 for the compiled table. The underlying reconstructions remain the intellectual property of their authors; follow the journal's reuse terms for direct quotation.
+
+## Historical storms and events (1859–present)
+
+- **Format in this repo:** `data/events/historical_storms.json`, hand-authored from peer-reviewed sources and official agency reports. Every event entry carries its own `sources` array with citations.
+- **Key references** (not exhaustive — see each event's `sources` for primary):
+  - Cliver, E. W. & Dietrich, W. F. (2013). *The 1859 space weather event revisited: limits of extreme activity.* J. Space Weather Space Clim. 3, A31. doi:10.1051/swsc/2013053
+  - Hayakawa, H. et al. (2018). *The Great Space Weather Event during 1872 February Recorded in East Asia.* ApJ 862, 15. doi:10.3847/1538-4357/aaca40
+  - Hapgood, M. (2019). *The Great Storm of May 1921: An Exemplar of a Dangerous Space Weather Event.* Space Weather 17, 950. doi:10.1029/2019SW002195
+  - Knipp, D. J. et al. (2018). *On the Little-Known Consequences of the 4 August 1972 Ultra-Fast Coronal Mass Ejecta.* Space Weather 16, 1635. doi:10.1029/2018SW002024
+  - Boteler, D. H. (2019). *A 21st Century View of the March 1989 Magnetic Storm.* Space Weather 17, 1427. doi:10.1029/2019SW002278
+  - Baker, D. N. et al. (2013). *A major solar eruptive event in July 2012.* Space Weather 11, 585. doi:10.1002/swe.20097
+  - NOAA SWPC event archive and storm reports: https://www.swpc.noaa.gov/
+- **License:** CC BY 4.0 for the compiled table. Individual event descriptions may quote cited works under fair-use for commentary and reference; full citations are provided for every entry.
+
 ## Planned, not yet integrated
 
 ### aa geomagnetic index (1868–present)
