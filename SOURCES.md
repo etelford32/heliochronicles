@@ -7,16 +7,32 @@ and publishing. Credit them.
 The `sources` column in each daily row records which of these providers
 contributed to that row, using the tokens in the "Source token" fields below.
 
-## Daily sunspot number (1818–present)
+## Group Number reconstruction (1610–1995)
+
+- **Source token:** `gsn`
+- **Provider:** Hoyt-Schatten (1998) original compilation, updated by Svalgaard & Schatten (2016) and Chatzistergos et al. (2017); SILSO publishes the community-maintained V2.0 that harmonizes these onto the modern SSN scale.
+- **Dataset:** Yearly mean Group Number (GN) from 1610 — the telescopic era. Extends the numerical record 208 years before SILSO's daily SSN and 90 years before SILSO's yearly SSN. Captures the Maunder Minimum as numerical data rather than narrative.
+- **URL:** https://www.sidc.be/SILSO/groupnumberv3
+- **Direct CSV:** https://www.sidc.be/SILSO/DATA/GN_y_V2.0.csv
+- **License:** CC BY-NC 4.0 (follows SILSO's terms).
+- **Citations:**
+  - Hoyt, D. V. & Schatten, K. H. (1998). *Group Sunspot Numbers: A new solar activity reconstruction.* Solar Physics 179, 189. doi:10.1023/A:1005007527816
+  - Svalgaard, L. & Schatten, K. H. (2016). *Reconstruction of the Sunspot Group Number: The Backbone Method.* Solar Physics 291, 2653. doi:10.1007/s11207-015-0815-8
+  - Chatzistergos, T. et al. (2017). *New reconstruction of the sunspot group numbers since 1739 using direct calibration and backbone methods.* Astronomy & Astrophysics 602, A69. doi:10.1051/0004-6361/201630045
+- **Notes:** Before 1700, the Group Number is the only numerical source; the `gsn_observers` field on each yearly row signals how many historical observer records underlie that year's mean. For Maunder-Minimum years, `gsn_observers` is often as low as 1–3, and the value itself is near zero — this is signal, not noise.
+
+## SILSO sunspot number — daily, monthly, yearly (1700–present)
 
 - **Source token:** `silso`
 - **Provider:** WDC-SILSO, Royal Observatory of Belgium, Brussels
-- **Dataset:** Total sunspot number, daily values, version 2.0
-- **URL:** https://www.sidc.be/SILSO/datafiles
-- **Direct CSV:** https://www.sidc.be/SILSO/INFO/sndtotcsv.php
+- **Datasets used:**
+  - Daily total SSN (V2.0), 1818+ — https://www.sidc.be/SILSO/INFO/sndtotcsv.php
+  - Monthly mean total SSN (V2.0), 1749+ — https://www.sidc.be/SILSO/INFO/snmtotcsv.php
+  - Yearly mean total SSN (V2.0), 1700+ — https://www.sidc.be/SILSO/INFO/snytotcsv.php
+- **Landing page:** https://www.sidc.be/SILSO/datafiles
 - **License:** CC BY-NC 4.0 (redistribution with attribution allowed for non-commercial use; commercial use requires permission from SILSO).
 - **Citation:** SILSO World Data Center. Sunspot Number and Long-term Solar Observations, Royal Observatory of Belgium, online Sunspot Number catalogue.
-- **Notes:** `-1` in the upstream indicates a missing day; normalized to null in the CSVs. `definitive=0` in the upstream indicates a provisional value; inverted to `ssn_provisional=true` in our CSVs (flag the exception, not the norm).
+- **Notes:** `-1` in the upstream indicates a missing day/value; normalized to null in our CSVs. `definitive=0` in the upstream indicates a provisional value; inverted to `ssn_provisional=true` in our CSVs (flag the exception, not the norm).
 
 ## Geomagnetic Kp/ap/Ap (1932–present) and F10.7 convenience columns
 

@@ -1,10 +1,16 @@
 # Data dictionary
 
-One row per calendar day, UTC. Primary key is `date`. Columns are the union of
-all supported upstream sources; any given cell is `null` (empty in CSV) when
-that source didn't cover that day.
+HelioChronicles publishes the numerical record at three native cadences:
+
+- **Daily** (`data/daily/daily_YYYY-YYYY.csv`) — 1818 onward, 13 columns, split into 50-year chunks. SILSO total SSN + GFZ Kp/ap + DRAO F10.7 + ISGI aa + cycle metadata.
+- **Monthly** (`data/monthly/monthly_1749-today.csv`) — 1749 onward, 8 columns, single file. SILSO monthly mean SSN with cycle metadata.
+- **Yearly** (`data/yearly/yearly_1610-today.csv`) — 1610 onward, 11 columns, single file. SILSO yearly mean SSN (1700+) joined with the Hoyt-Schatten / Svalgaard-Schatten Group Number reconstruction (1610+). This is the deepest reach of the numerical record — it captures the Maunder Minimum as data rather than narrative.
+
+Cells are `null` (empty in CSV) when a source doesn't cover the period. We never use sentinel values like -1 or 9999; upstream sentinels are normalized to null at parse time.
 
 ## Daily table
+
+One row per calendar day, UTC. Primary key is `date`. Columns are the union of all supported upstream sources.
 
 | # | column             | type    | units       | range / domain                | null when                      | source          | span   |
 |---|--------------------|---------|-------------|-------------------------------|--------------------------------|-----------------|--------|
@@ -37,6 +43,41 @@ that source didn't cover that day.
 **Missing value convention.** In CSV, an empty cell between commas means null. In JSON, the literal `null` is used. We never use sentinel values like -1 or -9999; upstream sentinels are normalized to null at parse time.
 
 **Column order is stable.** It's defined here and must match the header line emitted by `scripts/build.mjs`. Changing the order is a major version bump per `CONTRIBUTING.md`.
+
+## Monthly table
+
+One row per calendar month. Primary key `date_month` in `YYYY-MM` form. Coverage 1749-01 → present.
+
+| # | column              | type      | units        | range / domain                | null when             | source     |
+|---|---------------------|-----------|--------------|-------------------------------|-----------------------|------------|
+| 1 | `date_month`        | string    | —            | `YYYY-MM`                     | never (primary key)   | —          |
+| 2 | `ssn`               | float     | —            | 0 – ~500                      | —                     | SILSO V2.0 |
+| 3 | `ssn_stddev`        | float     | same as ssn  | ≥ 0                           | fewer than 4 stations | SILSO V2.0 |
+| 4 | `ssn_stations`      | int       | count        | ≥ 0                           | —                     | SILSO V2.0 |
+| 5 | `ssn_provisional`   | bool      | —            | true / false                  | —                     | SILSO V2.0 |
+| 6 | `cycle`             | int\|null | —            | 1 – 25                        | pre-1755              | curated    |
+| 7 | `cycle_phase`       | enum      | —            | `rising` / `max` / `falling` / `min` | pre-1755       | computed   |
+| 8 | `sources`           | string    | —            | csv of `silso`, `cycles`      | never                 | computed   |
+
+## Yearly table
+
+One row per calendar year. Primary key `year` (integer). Coverage 1610 → present.
+
+| #  | column            | type      | units       | range / domain                 | null when                         | source                    |
+|----|-------------------|-----------|-------------|--------------------------------|-----------------------------------|---------------------------|
+| 1  | `year`            | int       | —           | 1610 – today                   | never (primary key)               | —                         |
+| 2  | `ssn`             | float     | —           | 0 – ~300                       | pre-1700 (before SILSO yearly)    | SILSO yearly V2.0         |
+| 3  | `ssn_stddev`      | float     | —           | ≥ 0                            | fewer than 4 stations             | SILSO yearly V2.0         |
+| 4  | `ssn_stations`    | int       | count       | ≥ 0                            | —                                 | SILSO yearly V2.0         |
+| 5  | `ssn_provisional` | bool      | —           | true / false                   | —                                 | SILSO yearly V2.0         |
+| 6  | `gsn`             | float     | —           | 0 – ~20                        | post-1995 (end of H-S series)     | Hoyt-Schatten / SILSO GN  |
+| 7  | `gsn_stddev`      | float     | —           | ≥ 0                            | limited observer count            | Hoyt-Schatten / SILSO GN  |
+| 8  | `gsn_observers`   | int       | count       | ≥ 0                            | —                                 | Hoyt-Schatten / SILSO GN  |
+| 9  | `cycle`           | int\|null | —           | 1 – 25                         | pre-1755                          | curated                   |
+| 10 | `cycle_phase`     | enum      | —           | `rising` / `max` / `falling` / `min` | pre-1755                    | computed                  |
+| 11 | `sources`         | string    | —           | csv of `silso`, `gsn`, `cycles`| never                             | computed                  |
+
+**On combining `ssn` and `gsn`.** The Group Number (GN) is a *reconstruction* of solar activity from historical sunspot-group counts, independent of the modern daily SSN. SILSO publishes GN V2.0 on a harmonized scale with the modern SSN, but the two quantities are derived differently and carry different uncertainties — especially in the 17th and 18th centuries where `gsn_observers` can be as low as 1–3. For years where both columns have values (1700–1995), prefer `ssn` for the modern instrumental scale; `gsn` is the best available source before 1700 and a useful cross-check between 1700 and 1995.
 
 ## Curated tables
 
@@ -82,7 +123,8 @@ Hand-curated catalog of major documented solar and geomagnetic events, 1859–pr
 | `date_end`          | date (ISO)   | Primary-storm end date; same as start for single-day events          |
 | `type`              | enum         | `storm`, `flare`, `cme`, `gle`, `carrington-class`                   |
 | `flare_class_peak`  | string\|null | X-ray class of the driving/associated flare (e.g. `X9.3`); `null` pre-satellite |
-| `dst_nT_est`        | int\|null    | Estimated minimum Dst in nT (negative); `null` where no data exists  |
+| `dst_nT`            | int\|null    | Minimum Dst in nT (negative); `null` where no Dst value exists       |
+| `dst_source`        | enum\|null   | `measured` (Kyoto WDC, 1957+), `reconstructed` (pre-Dst magnetogram archives), `estimated-hypothetical` (CME modelled but missed Earth), or `null` |
 | `storm_scale`       | string\|null | NOAA G-scale (`G1`–`G5`); `null` for events outside the modern scale |
 | `aurora_lat_deg`    | number\|null | Lowest reported geomagnetic latitude of visible aurora               |
 | `cycle`             | int          | Solar cycle number at the time of the event                          |
@@ -113,10 +155,13 @@ The file's `_notes_on_antiquity` object documents what is *not* in the catalog: 
 
 ## File layout
 
-- `data/daily/daily_YYYY-YYYY.csv` — 50-year CSV chunks of the daily table.
+- `data/daily/daily_YYYY-YYYY.csv` — 50-year CSV chunks of the daily table (1818+).
+- `data/monthly/monthly_1749-today.csv` — single-file monthly SSN (1749+).
+- `data/yearly/yearly_1610-today.csv` — single-file yearly SSN + GSN (1610+).
 - `data/cycles/solar_cycles.json` — curated numbered-cycle table (1755+).
 - `data/cycles/grand_minima.json` — curated grand solar minima, including pre-instrumental reconstructions.
 - `data/events/historical_storms.json` — hand-curated catalog of notable storms and events (1859+).
+- `data/events/aurora_observations.json` — hand-curated pre-instrumental aurora catalog (~660 BCE → 1847 CE).
 - `data/MANIFEST.json` — per-file SHA-256, row count, last-updated timestamp.
 
 No external schema contract is imposed. This document is the spec; `scripts/validate.mjs` checks that the CSV headers match this column list in order and that dates are monotonic and well-formed.

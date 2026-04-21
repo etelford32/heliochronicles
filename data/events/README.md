@@ -20,8 +20,23 @@ The file contains two objects at the root:
 
 Each event has `id`, `name`, `date_start`, `date_end`, `type`, `cycle`,
 `significance`, `effects`, and `sources`. Magnitude fields (`flare_class_peak`,
-`dst_nT_est`, `storm_scale`, `aurora_lat_deg`) are populated where historical
+`dst_nT`, `storm_scale`, `aurora_lat_deg`) are populated where historical
 evidence supports a specific value; `null` otherwise.
+
+The `dst_source` field distinguishes provenance at a glance:
+
+- **`measured`** — Dst was instrumentally observed at the time and is archived
+  by the Kyoto World Data Center for Geomagnetism. The Dst index started in
+  1957, so all events from 1957 onward where Earth was actually hit carry this tag.
+- **`reconstructed`** — Dst was later reconstructed from pre-1957 magnetogram
+  archives (Kew, Greenwich, Colaba, Göttingen and others). Order-of-magnitude
+  uncertainty; the cited paper usually gives a range, of which the `dst_nT`
+  field captures the central or most-cited estimate.
+- **`estimated-hypothetical`** — the event never hit Earth but its impact is
+  modelled (currently one entry: the July 2012 near-miss CME). The `dst_nT`
+  value is a projection of what *would have* been measured if Earth had
+  been in the path.
+- **`null`** — no Dst value exists (GLE events, radiation-only storms).
 
 ### `aurora_observations.json`
 

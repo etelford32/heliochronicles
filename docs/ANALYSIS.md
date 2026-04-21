@@ -129,22 +129,24 @@ SC25 began at the 2019-12 minimum; the published smoothed maximum is 2024-08, wi
 
 14 hand-curated events span 1859-09-01 to 2024-10-11. Each is documented in peer-reviewed literature or official agency reports; see `data/events/historical_storms.json` for the full `sources` list on every entry.
 
-| Date(s) | Event | Cycle | Peak flare | Dst est. (nT) | G-scale | Lowest aurora lat. |
-|:-------:|:------|:-----:|:-----------|--------------:|:-------:|:------------------:|
-| 1859-09-01 – 1859-09-02 | Carrington Event | SC10 | X45± | -900 | — | 23° |
-| 1872-02-04 | Great Magnetic Storm of February 1872 | SC11 | — | -830 | — | 20° |
-| 1921-05-13 – 1921-05-15 | New York Railroad Storm | SC15 | — | -907 | — | 25° |
-| 1940-03-24 – 1940-03-25 | Easter Sunday Storm | SC17 | — | -389 | — | 30° |
-| 1956-02-23 | 23 February 1956 Ground-Level Enhancement | SC19 | X∞ | — | — | — |
-| 1972-08-02 – 1972-08-11 | August 1972 Event | SC20 | X5+ | -125 | — | 35° |
-| 1989-03-10 – 1989-03-14 | Quebec Blackout Storm | SC22 | X4.5 | -589 | G5 | 25° |
-| 2000-07-14 – 2000-07-16 | Bastille Day Event | SC23 | X5.7 | -301 | G5 | 35° |
-| 2003-10-19 – 2003-11-07 | Halloween Storms | SC23 | X28+ | -383 | G5 | 28° |
-| 2005-09-07 – 2005-09-13 | September 2005 X17 Flare Series | SC23 | X17 | -139 | G4 | 40° |
-| 2012-07-23 | July 2012 Near-Miss CME | SC24 | X2.5+ | -1200 | — | — |
-| 2017-09-06 – 2017-09-10 | September 2017 Flares and Storm | SC24 | X9.3 | -142 | G4 | 40° |
-| 2024-05-10 – 2024-05-12 | Gannon Storm (Mother's Day Storm) | SC25 | X5.8 | -412 | G5 | 26° |
-| 2024-10-10 – 2024-10-11 | October 2024 G4 Storm | SC25 | X1.8 | -335 | G4 | 30° |
+| Date(s) | Event | Cycle | Peak flare | Dst (nT) | Src | G-scale | Lowest aurora lat. |
+|:-------:|:------|:-----:|:-----------|---------:|:---:|:-------:|:------------------:|
+| 1859-09-01 – 1859-09-02 | Carrington Event | SC10 | X45± | -900 | R | — | 23° |
+| 1872-02-04 | Great Magnetic Storm of February 1872 | SC11 | — | -830 | R | — | 20° |
+| 1921-05-13 – 1921-05-15 | New York Railroad Storm | SC15 | — | -907 | R | — | 25° |
+| 1940-03-24 – 1940-03-25 | Easter Sunday Storm | SC17 | — | -389 | R | — | 30° |
+| 1956-02-23 | 23 February 1956 Ground-Level Enhancement | SC19 | X∞ | — | — | — | — |
+| 1972-08-02 – 1972-08-11 | August 1972 Event | SC20 | X5+ | -125 | M | — | 35° |
+| 1989-03-10 – 1989-03-14 | Quebec Blackout Storm | SC22 | X4.5 | -589 | M | G5 | 25° |
+| 2000-07-14 – 2000-07-16 | Bastille Day Event | SC23 | X5.7 | -301 | M | G5 | 35° |
+| 2003-10-19 – 2003-11-07 | Halloween Storms | SC23 | X28+ | -383 | M | G5 | 28° |
+| 2005-09-07 – 2005-09-13 | September 2005 X17 Flare Series | SC23 | X17 | -139 | M | G4 | 40° |
+| 2012-07-23 | July 2012 Near-Miss CME | SC24 | X2.5+ | -1200 | H | — | — |
+| 2017-09-06 – 2017-09-10 | September 2017 Flares and Storm | SC24 | X9.3 | -142 | M | G4 | 40° |
+| 2024-05-10 – 2024-05-12 | Gannon Storm (Mother's Day Storm) | SC25 | X5.8 | -412 | M | G5 | 26° |
+| 2024-10-10 – 2024-10-11 | October 2024 G4 Storm | SC25 | X1.8 | -335 | M | G4 | 30° |
+
+_Src legend — **M** = measured (Kyoto WDC, 1957+); **R** = reconstructed from pre-Dst magnetogram archives; **H** = estimated-hypothetical (CME modelled but missed Earth)._
 
 ### By cycle
 
@@ -161,12 +163,9 @@ SC25 began at the 2019-12 minimum; the published smoothed maximum is 2024-08, wi
 
 ### Carrington-class and near-Carrington events
 
-4 events in the record meet the Carrington-class threshold (estimated Dst ≤ −800 nT, or explicitly classified as such):
+1 event in the record meet the Carrington-class threshold (estimated Dst ≤ −800 nT, or explicitly classified as such):
 
 - **Carrington Event** (1859-09-01): The benchmark extreme solar event. Aurora observed in the Caribbean; telegraph systems failed or operated without battery power from induced currents.
-- **Great Magnetic Storm of February 1872** (1872-02-04): Aurora seen from Mumbai, Khartoum, and Santiago. Among the lowest-latitude aurora records in history; comparable in intensity to Carrington.
-- **New York Railroad Storm** (1921-05-13): Largest storm of the 20th century before 1989. Railroad and telegraph systems across the US and Europe failed; a fire at Central New England Railroad's control tower was attributed to induced currents.
-- **July 2012 Near-Miss CME** (2012-07-23): STEREO-A measured a CME whose solar-wind speed at 1 AU reached ~2200 km/s — Carrington-class. Earth was ahead of the ejection direction by ~9 days; a direct hit would have produced the largest storm of the instrumental era.
 
 ---
 
@@ -181,7 +180,7 @@ _No daily CSVs present yet. Run `npm run build` to populate `data/daily/`; this 
 - Cycle boundaries and peak SSN values are hand-curated from the SIDC-SILSO published cycle table, stored in `data/cycles/solar_cycles.json`.
 - Peak SSN values are **smoothed monthly means** at the reported maximum month, V2.0 scale. Daily values in `data/daily/` are raw (unsmoothed) and therefore peak higher than the cycle peak value.
 - Grand minima boundaries in `data/cycles/grand_minima.json` are approximate. Telescopic minima (Maunder, Dalton) are from direct observation; pre-telescopic minima are from cosmogenic isotope reconstructions with uncertainty on the order of decades.
-- Historical storms in `data/events/historical_storms.json` are hand-curated from peer-reviewed sources. `dst_nT_est` values before the satellite era (pre-1957) are reconstructions from magnetogram archives with order-of-magnitude uncertainty. See each event's `sources` list for the primary reference.
+- Historical storms in `data/events/historical_storms.json` are hand-curated from peer-reviewed sources. Every entry carries a `dst_source` tag distinguishing **measured** values from Kyoto WDC (1957+), **reconstructed** values from pre-Dst magnetogram archives (Kew/Greenwich/Colaba/Göttingen), and **estimated-hypothetical** values for the 2012 near-miss CME that never hit Earth.
 - Pre-instrumental aurora observations in `data/events/aurora_observations.json` are identifications made by modern paleoaurora researchers from historical chronicles; the cited paper did the work of distinguishing aurora from meteor, comet, and atmospheric optical phenomena. Identification confidence is preserved per entry. This catalog cannot be used for quantitative intensity reconstruction — only the lowest-latitude reach of visible aurora is available as a qualitative storm-strength indicator.
 - Era groupings are a convention of this report, not a formally defined solar-physics classification.
 - The daily table follows the 13-column spec in `docs/DATA_DICTIONARY.md`: date, ssn, ssn_stddev, ssn_stations, ssn_provisional, f107_obs, f107_adj, kp_sum, ap, aa, cycle, cycle_phase, sources.
