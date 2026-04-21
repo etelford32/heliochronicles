@@ -1,6 +1,6 @@
 {
   "name": "heliochronicles",
-  "version": "0.6.0",
+  "version": "0.9.0",
   "description": "Three centuries of space weather, in one repo.",
   "type": "module",
   "private": true,
@@ -10,14 +10,17 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "build:daily": "node scripts/build.mjs daily",
+    "build:hourly": "node scripts/build.mjs hourly",
     "build:monthly": "node scripts/build.mjs monthly",
     "build:yearly": "node scripts/build.mjs yearly",
     "build:silso": "node scripts/build.mjs silso",
     "build:gfz": "node scripts/build.mjs gfz",
     "build:isgi": "node scripts/build.mjs isgi",
     "build:gsn": "node scripts/build.mjs gsn",
+    "build:omni": "node scripts/build.mjs omni",
     "validate": "node scripts/validate.mjs",
-    "analyze": "node scripts/analyze.mjs"
+    "analyze": "node scripts/analyze.mjs",
+    "render-hero": "node scripts/render-hero.mjs"
   },
   "repository": {
     "type": "git",

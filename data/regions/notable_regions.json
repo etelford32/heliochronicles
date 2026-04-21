@@ -1,0 +1,243 @@
+{
+  "_schema": "Notable solar active regions with documented impact on geomagnetic activity. Each entry cites peer-reviewed literature or official agency reports. Modern NOAA region numbering began in 1972 (incrementing indefinitely); for events before that, entries use the USAF McMath-Hulbert catalog numbering with `numbering_scheme` set accordingly. This is a curated catalog, not a complete ingestion of the SWPC Solar Region Summary archive; see `scripts/sources/swpc-regions.mjs` for the bulk-ingestion stub planned for v1.x. Curator: HelioChronicles. Last reviewed 2026-04.",
+  "_fields": {
+    "id":                    "stable slug, used in historical_storms.source_region_ids",
+    "noaa_number":           "NOAA SWPC-assigned region number (integer); null for pre-1972 entries",
+    "pre_noaa_number":       "USAF McMath-Hulbert number for pre-1972 entries; null otherwise",
+    "numbering_scheme":      "noaa (1972+) | mcmath (pre-1972)",
+    "first_observed":        "ISO date region first catalogued on the Earth-facing disk",
+    "last_observed":         "ISO date region last seen before limb crossing or decay",
+    "cycle":                 "solar cycle number",
+    "peak_magnetic_class":   "Mt. Wilson / Hale magnetic classification at peak complexity (e.g. beta-gamma-delta)",
+    "peak_mcintosh":         "Modified-Zurich (McIntosh) morphological class at peak (e.g. Fkc)",
+    "peak_area_msh":         "peak sunspot area in millionths of the solar hemisphere (MSH)",
+    "peak_flare":            "largest flare produced by this region (X-ray class)",
+    "flare_count_x_class":   "count of X-class flares produced (when known)",
+    "significance":          "one-sentence rationale for inclusion",
+    "produced_events":       "list of ids in historical_storms.json this region drove",
+    "sources":               "peer-reviewed citations"
+  },
+  "regions": [
+    {
+      "id": "mcmath-11976",
+      "noaa_number": null,
+      "pre_noaa_number": 11976,
+      "numbering_scheme": "mcmath",
+      "first_observed": "1972-07-29",
+      "last_observed": "1972-08-13",
+      "cycle": 20,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": null,
+      "peak_area_msh": 1420,
+      "peak_flare": "X5+",
+      "flare_count_x_class": 4,
+      "significance": "Produced the August 1972 ultra-fast CME (14.6 hour Sun-to-Earth transit, still the fastest on record). Would have delivered a fatal radiation dose to Apollo astronauts if timed between missions 16 and 17 — the canonical case study for crewed-spaceflight radiation risk.",
+      "produced_events": ["aug-1972"],
+      "sources": [
+        { "citation": "Knipp, D. J. et al. (2018). On the Little-Known Consequences of the 4 August 1972 Ultra-Fast Coronal Mass Ejecta. Space Weather 16, 1635–1643.", "doi": "10.1029/2018SW002024" },
+        { "citation": "Dodson, H. W. & Hedeman, E. R. (1972). McMath-Hulbert Observatory records of region 11976, 1972 July–August." }
+      ]
+    },
+    {
+      "id": "ar-5395",
+      "noaa_number": 5395,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "1989-03-06",
+      "last_observed": "1989-03-19",
+      "cycle": 22,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 2500,
+      "peak_flare": "X15",
+      "flare_count_x_class": 11,
+      "significance": "One of the most productive active regions of the 20th century. Produced the March 13-14 1989 CME that collapsed the Hydro-Québec grid — the modern canonical case for power-grid vulnerability to space weather.",
+      "produced_events": ["march-1989"],
+      "sources": [
+        { "citation": "Boteler, D. H. (2019). A 21st Century View of the March 1989 Magnetic Storm. Space Weather 17, 1427–1441.", "doi": "10.1029/2019SW002278" },
+        { "citation": "NOAA SWPC Solar Region Summary archive, March 1989." },
+        { "citation": "Allen, J. et al. (1989). Effects of the March 1989 solar activity. Eos Trans. AGU 70, 1479." }
+      ]
+    },
+    {
+      "id": "ar-9077",
+      "noaa_number": 9077,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2000-07-06",
+      "last_observed": "2000-07-17",
+      "cycle": 23,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 1740,
+      "peak_flare": "X5.7",
+      "flare_count_x_class": 3,
+      "significance": "Drove the Bastille Day event — the first fully space-instrumented major storm, establishing the modern CME-timing template for operational forecasting.",
+      "produced_events": ["bastille-2000"],
+      "sources": [
+        { "citation": "Smith, Z. et al. (2003). A comparison of the Bastille Day event (2000 July 14) with the Halloween storm (2003 October 29). Solar Phys. 225, 377." },
+        { "citation": "NOAA SWPC Solar Region Summary archive, July 2000." }
+      ]
+    },
+    {
+      "id": "ar-10484",
+      "noaa_number": 10484,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2003-10-18",
+      "last_observed": "2003-10-31",
+      "cycle": 23,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 1750,
+      "peak_flare": "X1.2",
+      "flare_count_x_class": 2,
+      "significance": "Early contributor to the Halloween sequence. Rotated into view ahead of AR 10486 and set the scene for the cluster of October–November 2003 storms.",
+      "produced_events": ["halloween-2003"],
+      "sources": [
+        { "citation": "Gopalswamy, N. et al. (2005). Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003. J. Geophys. Res. 110, A09S15.", "doi": "10.1029/2004JA010958" },
+        { "citation": "NOAA SWPC Solar Region Summary archive, October 2003." }
+      ]
+    },
+    {
+      "id": "ar-10486",
+      "noaa_number": 10486,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2003-10-22",
+      "last_observed": "2003-11-04",
+      "cycle": 23,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 2410,
+      "peak_flare": "X28+",
+      "flare_count_x_class": 7,
+      "significance": "Primary driver of the Halloween storms. Produced the X17.2 flare of Oct 28, the X10.0 of Oct 29, and the X28+ of Nov 4 — the largest flare ever directly observed, which saturated GOES detectors. One of the largest active regions of cycle 23.",
+      "produced_events": ["halloween-2003"],
+      "sources": [
+        { "citation": "Gopalswamy, N. et al. (2005). Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003. J. Geophys. Res. 110, A09S15.", "doi": "10.1029/2004JA010958" },
+        { "citation": "Thomson, N. R. et al. (2004). Large solar flares and their ionospheric D region enhancements. J. Geophys. Res. 109, A06306.", "doi": "10.1029/2003JA010273" },
+        { "citation": "NOAA SWPC Halloween 2003 event review." }
+      ]
+    },
+    {
+      "id": "ar-10488",
+      "noaa_number": 10488,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2003-10-26",
+      "last_observed": "2003-11-04",
+      "cycle": 23,
+      "peak_magnetic_class": "beta-gamma",
+      "peak_mcintosh": "Ekc",
+      "peak_area_msh": 1460,
+      "peak_flare": "M7.6",
+      "flare_count_x_class": 0,
+      "significance": "Late contributor to the Halloween sequence. Though it produced no X-class flares itself, its M-class series sustained geomagnetic disturbance through early November and drove aurora visible to tropical latitudes.",
+      "produced_events": ["halloween-2003"],
+      "sources": [
+        { "citation": "Gopalswamy, N. et al. (2005). Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003. J. Geophys. Res. 110, A09S15.", "doi": "10.1029/2004JA010958" }
+      ]
+    },
+    {
+      "id": "ar-10808",
+      "noaa_number": 10808,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2005-09-07",
+      "last_observed": "2005-09-19",
+      "cycle": 23,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 1430,
+      "peak_flare": "X17.0",
+      "flare_count_x_class": 9,
+      "significance": "Most flare-productive active region of cycle 23 — nine X-class flares in 12 days, including X17.0 (Sept 7), X6.2 (Sept 8), and X6.2 (Sept 13). Drove the September 2005 G4 storm sequence.",
+      "produced_events": ["sept-2005"],
+      "sources": [
+        { "citation": "NOAA SWPC Solar Region Summary and event archive, September 2005." },
+        { "citation": "Wang, R. et al. (2006). Comparison of observed and modeled coronal magnetic structure for NOAA AR 10808. ApJ 652, L161." }
+      ]
+    },
+    {
+      "id": "ar-12192",
+      "noaa_number": 12192,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2014-10-17",
+      "last_observed": "2014-10-30",
+      "cycle": 24,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 2750,
+      "peak_flare": "X3.1",
+      "flare_count_x_class": 6,
+      "significance": "LARGEST active region observed since November 1990 (AR 6368). Produced six X-class flares — yet remarkably few geoeffective CMEs, defying the expectation that area and eruptivity scale together. The canonical 'silent giant' case study.",
+      "produced_events": [],
+      "sources": [
+        { "citation": "Sun, X. et al. (2015). Why is the great solar active region 12192 flare-rich but CME-poor? ApJ Letters 804, L28.", "doi": "10.1088/2041-8205/804/2/L28" },
+        { "citation": "Chen, H. et al. (2017). Why was the flare-rich AR 12192 CME-poor? ApJ 851, 133.", "doi": "10.3847/1538-4357/aa9bee" }
+      ]
+    },
+    {
+      "id": "ar-12673",
+      "noaa_number": 12673,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2017-08-28",
+      "last_observed": "2017-09-10",
+      "cycle": 24,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Ekc",
+      "peak_area_msh": 1060,
+      "peak_flare": "X9.3",
+      "flare_count_x_class": 4,
+      "significance": "Produced the largest flare of cycle 24 (X9.3, Sept 6) and an X8.2 limb flare on Sept 10 that generated a widely-studied CME. Drove the Sept 7-8 G4 storm and disrupted HF radio during Atlantic hurricane response operations.",
+      "produced_events": ["sept-2017"],
+      "sources": [
+        { "citation": "Redmon, R. J. et al. (2018). September 2017's geoeffective space weather and impacts to Caribbean radio communications during hurricane response. Space Weather 16, 1190–1201.", "doi": "10.1029/2018SW001897" },
+        { "citation": "Sharykin, I. N. & Kosovichev, A. G. (2018). Dynamics of electric currents, magnetic field topology, and helioseismic response of a solar flare in NOAA AR 12673. ApJ 864, 86." }
+      ]
+    },
+    {
+      "id": "ar-13664",
+      "noaa_number": 13664,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2024-05-01",
+      "last_observed": "2024-05-14",
+      "cycle": 25,
+      "peak_magnetic_class": "beta-gamma-delta",
+      "peak_mcintosh": "Fkc",
+      "peak_area_msh": 2500,
+      "peak_flare": "X5.8",
+      "flare_count_x_class": 12,
+      "significance": "Largest active region of cycle 25 through 2024. Produced a week-long X-class flare series (May 8-11) and multiple Earth-directed CMEs that merged in transit to drive the Gannon (Mother's Day) G5 storm — first G5 since Halloween 2003.",
+      "produced_events": ["gannon-2024"],
+      "sources": [
+        { "citation": "NOAA SWPC (2024). Mother's Day Geomagnetic Storm event report." },
+        { "citation": "Parker, W. E. & Linares, R. (2024). Satellite Drag Analysis During the May 2024 Gannon Geomagnetic Storm. AIAA preprint." },
+        { "citation": "Hayakawa, H. et al. (2025). The solar and interplanetary context of the May 2024 extreme geomagnetic storm. ApJ Letters (in press)." }
+      ]
+    },
+    {
+      "id": "ar-13848",
+      "noaa_number": 13848,
+      "pre_noaa_number": null,
+      "numbering_scheme": "noaa",
+      "first_observed": "2024-09-27",
+      "last_observed": "2024-10-10",
+      "cycle": 25,
+      "peak_magnetic_class": "beta-gamma",
+      "peak_mcintosh": "Ekc",
+      "peak_area_msh": 900,
+      "peak_flare": "X1.8",
+      "flare_count_x_class": 2,
+      "significance": "Drove the October 2024 G4 storm — the second major SC25 storm within five months of Gannon, confirming that SC25 is producing extreme events at a cadence closer to cycle 23 than cycle 24.",
+      "produced_events": ["october-2024"],
+      "sources": [
+        { "citation": "NOAA SWPC (2024). October 2024 G4 storm event summary." }
+      ]
+    }
+  ]
+}

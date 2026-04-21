@@ -10,6 +10,85 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-04-21
+
+Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
+
+### Added — hero SVG
+
+- **`scripts/render-hero.mjs`** — reproducible SVG renderer, zero runtime dependencies. Reads `solar_cycles.json`, `grand_minima.json`, and `historical_storms.json`; emits `docs/charts/hero.svg` as 1200×600 inline SVG. Cycle bars colored by a solar gradient, SC19 highlighted, Maunder and Dalton minima shaded, named storm markers along the x-axis.
+- **`docs/charts/hero.svg`** — committed output. Embedded at the top of the README so the repo's first impression renders without running anything.
+
+### Added — POSTCARD
+
+- **`docs/POSTCARD.md`** — ten plain-text facts, one page. Every number is computed or quoted from a file in `data/`: the 660 BCE Assyrian aurora record cross-corroborated by the 660 BCE Miyake event, SC19 as the biggest cycle at SSN 285, the Maunder Minimum's aurora gap, Gannon 2024 as the largest measured-era storm at Dst −412 nT, and the full data-span ladder from 660 BCE to today.
+
+### Added — runnable examples
+
+- **`examples/python/cycles_and_storms.py`** — pandas load of three curated JSON tables, cross-references every storm to its source active region.
+- **`examples/r/storms_by_cycle.R`** — tidyverse aggregation of storms by cycle with largest-storm-per-cycle summary.
+- **`examples/duckdb/query.sql`** — three SQL queries over the JSON tables (cycles at a glance, storms per cycle, top-10 Dst minima).
+- **`examples/README.md`** — how to run each, what they load, extension patterns for CSV tables once `npm run build` populates them.
+
+### Changed
+
+- **`README.md`** — hero SVG embedded at top. Expanded data-span description (660 BCE → today instead of just "three centuries"). New "Start here" block linking POSTCARD, ANALYSIS, DATA_DICTIONARY, and examples. Full 9-file `data/` inventory.
+
+### Next
+
+- Tag **v1.0.0** once `npm run build hourly` populates OMNI data and the storm-catalog integrity check returns 🟢. The check is wired and unit-verified; it'll run automatically the first time `npm run analyze` sees populated hourly CSVs.
+
+## [0.8.0] - 2026-04-21
+
+### Added — active regions
+
+- **`data/regions/notable_regions.json`** — hand-curated catalog of 11 solar active regions that drove catalog events, covering the modern Dst era plus the pre-NOAA 1972 case (USAF McMath 11976). Full per-region detail: first/last observed, peak magnetic class (Mt. Wilson), peak McIntosh morphology, peak area (MSH), peak flare class, X-class flare count, and produced-events back-reference.
+- **`data/regions/README.md`** — catalog conventions, curation criteria, and explicit documentation of the pre-1972 McMath-Hulbert numbering scheme.
+- **`scripts/sources/swpc-regions.mjs`** — stub for future bulk ingestion of the full NOAA SWPC Solar Region Summary archive (~18,000 daily files, 1972+). Tracked as a v1.x goal; the current curated catalog covers every measured-era storm in `historical_storms.json`.
+
+### Standardization across the historical layer
+
+- **Every storm in `historical_storms.json` now carries `source_region_ids`** — an array of region ids that produced the event. 8 of 14 storms link to regions; 6 carry empty arrays (pre-NOAA numbering for Carrington 1859, 1872, 1921, 1940; pre-modern-numbering 1956 GLE; backside ejection for the 2012 near-miss).
+- **Bidirectional linkage enforced**: `historical_storms.source_region_ids` ↔ `notable_regions.produced_events`. Build-time sanity check verifies every storm→region link has a matching region→storm link.
+
+### Storm-catalog integrity check (hardened)
+
+- `scripts/analyze.mjs` now produces an **explicit PASS / FAIL / INCOMPLETE** verdict for the storm catalog when hourly OMNI data is loaded. The check compares catalog `dst_nT` against the minimum hourly Dst observed within ±3 days of each event window, with a **±5 nT tolerance**.
+- Output surfaces the verdict with a status emoji (🟢 PASS, 🔴 FAIL, 🟡 INCOMPLETE, ⚪ not runnable), a summary block (measured-era storms / verified / unverified / max |Δ| / over-tolerance count), and a per-event table with Δ, pass/fail flag, and source AR column.
+- Over-tolerance events render an explicit "Investigate: upstream revision, smoothing convention, or curation bug" callout — making curation drift loud instead of silent.
+- Unit-tested against 6 synthetic fixtures: exact match (PASS), 10 nT off (FAIL), 4 nT edge (PASS), empty data (not runnable), no measured storms (not runnable), incomplete coverage (INCOMPLETE).
+- End-to-end smoke-tested: synthetic 8-row hourly CSV at catalog Dst values → integrity renders `🟢 PASS — all 8 measured-era storms match within ±5 nT. max |Δ| 0.0 nT.`
+
+### Analyze report
+
+- New **"Source active regions"** section with per-region table (region, cycle, observation window, peak magnetic class, peak area, peak flare, driven events) and a list of unlinked storms with explicit reason (pre-numbering / ambiguous / backside).
+- Storm-catalog cross-reference table extended with **Source AR column**, **Δ column**, and **Within ±5 nT flag** — every row now shows the full provenance chain from event to source region to measured hourly Dst.
+- Methodology section documents region curation and integrity-check verdict when hourly data is loaded.
+
+### Docs
+
+- `docs/DATA_DICTIONARY.md` gains the full spec for `data/regions/notable_regions.json`.
+- `SOURCES.md` gains a notable-regions section citing Boteler 2019, Knipp 2018, Gopalswamy 2005, Sun 2015, Redmon 2018, and Parker & Linares 2024.
+
+## [0.7.0] - 2026-04-21
+
+### Added — hourly cadence
+
+- **`data/hourly/hourly_YYYY-YYYY.csv`** — NASA OMNI 2 hourly merged solar-wind, IMF, and geomagnetic indices from 1963 onward, chunked by decade. ~540,000 rows when fully populated; 12 columns (`date`, `hour`, `v_sw`, `n_p`, `t_p`, `b_total`, `bz_gsm`, `pressure`, `dst`, `ap`, `ae`, `sources`). This is the modern-era ground truth: `bz_gsm` as the primary geoeffective driver, `dst` as the storm index at native cadence.
+- **`scripts/sources/omni.mjs`** — parses OMNI 2's 55-field whitespace format, extracts the curated 11-column subset, converts DOY+hour to ISO date+hour, and normalizes 9 distinct sentinel patterns (999.9, 9999999., 99999, 999, 9999 etc.) to null. Rejects malformed lines and out-of-range DOY/hour values with clear errors. Default URL: `https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2_all_years.dat`.
+
+### Closed loops
+
+- OMNI re-packages Dst from Kyoto WDC. The `dst` column in the hourly table and the `dst_source: measured` tag in `historical_storms.json` now reference the same underlying series — so every 1957+ storm in the catalog has a cross-checkable measured Dst minimum in the hourly data, documented in the analyze output.
+
+### Changed
+
+- `scripts/build.mjs` orchestrates four cadences now (hourly, daily, monthly, yearly) with per-cadence and per-source flags. New flags: `hourly`, `omni`.
+- `scripts/validate.mjs` validates the hourly table with a composite `(date, hour)` monotonicity check.
+- `scripts/analyze.mjs` adds a **"Hourly record (NASA OMNI, 1963+)"** section with coverage, a storm-hour census (moderate/strong/severe/extreme), top-10 lowest Dst hours, top-10 solar-wind speeds, and a **storm-catalog cross-reference** that reads the measured hourly Dst minimum within ±3 days of every measured-era entry in `historical_storms.json` — flagging any Δ > 5 nT between catalog and measured value.
+- `docs/DATA_DICTIONARY.md` — full spec for the hourly table, OMNI column-number reference, provenance note on Dst.
+- `SOURCES.md` — new OMNI section citing King & Papitashvili 2005, documenting which of OMNI's convenience columns (Dst, AE, ap) come from which upstream provider.
+
 ## [0.6.0] - 2026-04-21
 
 ### Added — the long numerical record
@@ -133,7 +212,10 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.9.0
+[0.8.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.8.0
+[0.7.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.7.0
 [0.6.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.6.0
 [0.5.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.5.0
 [0.4.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.4.0

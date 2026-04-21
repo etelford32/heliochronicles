@@ -7,6 +7,22 @@ and publishing. Credit them.
 The `sources` column in each daily row records which of these providers
 contributed to that row, using the tokens in the "Source token" fields below.
 
+## OMNI hourly solar wind, IMF, and geomagnetic indices (1963–present)
+
+- **Source token:** `omni`
+- **Provider:** NASA Space Physics Data Facility (SPDF), Goddard Space Flight Center. OMNI composites measurements from a rotating set of L1 spacecraft (IMP 1, 3, 4, 5, 6, 7, 8; ISEE 3; Wind; ACE; DSCOVR) into a single time-continuous hourly record at 1 AU.
+- **Dataset:** OMNI 2 low-resolution hourly merged solar-wind, IMF, plasma, and geomagnetic indices, 1963+. 55 columns per hour, of which HelioChronicles extracts 11.
+- **Landing page:** https://omniweb.gsfc.nasa.gov/
+- **Direct file:** https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2_all_years.dat
+- **Format spec:** https://omniweb.gsfc.nasa.gov/html/ow_data.html
+- **License:** Public domain (NASA works are not subject to copyright in the United States).
+- **Citation:** King, J. H. & Papitashvili, N. E. (2005). *Solar wind spatial scales in and comparisons of hourly Wind and ACE plasma and magnetic field data.* J. Geophys. Res. 110, A02104. doi:10.1029/2004JA010649
+- **Embedded indices (convenience columns, original providers credited):**
+  - **Dst (nT)** — Kyoto WDC for Geomagnetism. The measured-era Dst values cited in `historical_storms.json` (`dst_source: measured`) come from this same Kyoto series, delivered via OMNI. URL: http://wdc.kugi.kyoto-u.ac.jp/dst_final/
+  - **AE (nT)** — Kyoto WDC. URL: same as Dst.
+  - **ap** — GFZ Potsdam (same source as the daily table's `ap` column).
+- **Notes:** OMNI uses multiple fill-value conventions (999.9, 9999999., 99999, 999, 9999) depending on field type. All are normalized to null. OMNI occasionally updates historical hours when upstream providers republish revised values; re-running `npm run build hourly` picks up such revisions.
+
 ## Group Number reconstruction (1610–1995)
 
 - **Source token:** `gsn`
@@ -80,6 +96,20 @@ contributed to that row, using the tokens in the "Source token" fields below.
   - Halley, E. (1716). *An Account of the late surprizing Appearance of the Lights seen in the Air.* Phil. Trans. Roy. Soc. London 29, 406. doi:10.1098/rstl.1714.0050 — the first scientific monograph on aurora.
   - Eddy, J. A. (1976). *The Maunder Minimum.* Science 192, 1189. doi:10.1126/science.192.4245.1189 — used the aurora-record gap as evidence of genuine solar quiescence.
 - **License:** CC BY 4.0 for the compiled catalog. Individual descriptions quote or paraphrase cited works under fair-use for commentary and reference; full citations are provided on every entry.
+
+## Notable active regions (1972–present, with pre-1972 McMath catalog entries)
+
+- **Source tokens:** `swpc` (NOAA numbered regions), `mcmath` (pre-1972 USAF McMath-Hulbert scheme)
+- **Format in this repo:** `data/regions/notable_regions.json`, hand-authored from peer-reviewed sources and official agency reports. Each entry carries its own `sources` array.
+- **Provider for bulk archive (pending v1.x ingestion):** NOAA SWPC Solar Region Summary (SRS), jointly published with USAF. The SRS archive holds one daily file per day listing every visible region with location, Mt. Wilson magnetic class, McIntosh morphology, area, and spot count. URL: https://services.swpc.noaa.gov/text/srs.txt (current only); historical archive at https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/
+- **Key references** (per-entry citations live in the JSON file itself):
+  - Boteler, D. H. (2019). *A 21st Century View of the March 1989 Magnetic Storm.* Space Weather 17, 1427. doi:10.1029/2019SW002278 — AR 5395.
+  - Knipp, D. J. et al. (2018). *On the Little-Known Consequences of the 4 August 1972 Ultra-Fast Coronal Mass Ejecta.* Space Weather 16, 1635. doi:10.1029/2018SW002024 — McMath 11976.
+  - Gopalswamy, N. et al. (2005). *Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003.* J. Geophys. Res. 110, A09S15. doi:10.1029/2004JA010958 — AR 10484, 10486, 10488.
+  - Sun, X. et al. (2015). *Why is the great solar active region 12192 flare-rich but CME-poor?* ApJ Letters 804, L28. doi:10.1088/2041-8205/804/2/L28 — AR 12192.
+  - Redmon, R. J. et al. (2018). *September 2017's geoeffective space weather and impacts to Caribbean radio communications during hurricane response.* Space Weather 16, 1190. doi:10.1029/2018SW001897 — AR 12673.
+  - Parker, W. E. & Linares, R. (2024). *Satellite Drag Analysis During the May 2024 Gannon Geomagnetic Storm.* AIAA preprint — AR 13664.
+- **License:** CC BY 4.0 for the compiled table. Individual peer-reviewed works remain under their journal's terms; this catalog quotes/paraphrases under fair-use for commentary.
 
 ## Historical storms and events (1859–present)
 

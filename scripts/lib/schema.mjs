@@ -31,6 +31,25 @@ export const MONTHLY_COLUMNS = [
 // reconstruction from 1610. Primary key `year` (integer). This is the
 // deepest reach of the numerical record — includes the Maunder Minimum
 // as data, not just narrative.
+// Hourly table: NASA OMNI 2 merged solar-wind, IMF, and geomagnetic indices
+// from 1963 onward. One row per UTC hour, primary key is (date, hour). Native
+// cadence for space-weather analysis; the storm catalog cross-references
+// hourly Dst values against measured minima during each event window.
+export const HOURLY_COLUMNS = [
+  'date',
+  'hour',
+  'v_sw',
+  'n_p',
+  't_p',
+  'b_total',
+  'bz_gsm',
+  'pressure',
+  'dst',
+  'ap',
+  'ae',
+  'sources'
+];
+
 export const YEARLY_COLUMNS = [
   'year',
   'ssn',
