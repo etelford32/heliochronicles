@@ -10,6 +10,34 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-04-21
+
+Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
+
+### Added — hero SVG
+
+- **`scripts/render-hero.mjs`** — reproducible SVG renderer, zero runtime dependencies. Reads `solar_cycles.json`, `grand_minima.json`, and `historical_storms.json`; emits `docs/charts/hero.svg` as 1200×600 inline SVG. Cycle bars colored by a solar gradient, SC19 highlighted, Maunder and Dalton minima shaded, named storm markers along the x-axis.
+- **`docs/charts/hero.svg`** — committed output. Embedded at the top of the README so the repo's first impression renders without running anything.
+
+### Added — POSTCARD
+
+- **`docs/POSTCARD.md`** — ten plain-text facts, one page. Every number is computed or quoted from a file in `data/`: the 660 BCE Assyrian aurora record cross-corroborated by the 660 BCE Miyake event, SC19 as the biggest cycle at SSN 285, the Maunder Minimum's aurora gap, Gannon 2024 as the largest measured-era storm at Dst −412 nT, and the full data-span ladder from 660 BCE to today.
+
+### Added — runnable examples
+
+- **`examples/python/cycles_and_storms.py`** — pandas load of three curated JSON tables, cross-references every storm to its source active region.
+- **`examples/r/storms_by_cycle.R`** — tidyverse aggregation of storms by cycle with largest-storm-per-cycle summary.
+- **`examples/duckdb/query.sql`** — three SQL queries over the JSON tables (cycles at a glance, storms per cycle, top-10 Dst minima).
+- **`examples/README.md`** — how to run each, what they load, extension patterns for CSV tables once `npm run build` populates them.
+
+### Changed
+
+- **`README.md`** — hero SVG embedded at top. Expanded data-span description (660 BCE → today instead of just "three centuries"). New "Start here" block linking POSTCARD, ANALYSIS, DATA_DICTIONARY, and examples. Full 9-file `data/` inventory.
+
+### Next
+
+- Tag **v1.0.0** once `npm run build hourly` populates OMNI data and the storm-catalog integrity check returns 🟢. The check is wired and unit-verified; it'll run automatically the first time `npm run analyze` sees populated hourly CSVs.
+
 ## [0.8.0] - 2026-04-21
 
 ### Added — active regions
@@ -184,7 +212,8 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.9.0
 [0.8.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.8.0
 [0.7.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.7.0
 [0.6.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.6.0
