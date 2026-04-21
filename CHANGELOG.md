@@ -10,6 +10,25 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-04-21
+
+### Added — hourly cadence
+
+- **`data/hourly/hourly_YYYY-YYYY.csv`** — NASA OMNI 2 hourly merged solar-wind, IMF, and geomagnetic indices from 1963 onward, chunked by decade. ~540,000 rows when fully populated; 12 columns (`date`, `hour`, `v_sw`, `n_p`, `t_p`, `b_total`, `bz_gsm`, `pressure`, `dst`, `ap`, `ae`, `sources`). This is the modern-era ground truth: `bz_gsm` as the primary geoeffective driver, `dst` as the storm index at native cadence.
+- **`scripts/sources/omni.mjs`** — parses OMNI 2's 55-field whitespace format, extracts the curated 11-column subset, converts DOY+hour to ISO date+hour, and normalizes 9 distinct sentinel patterns (999.9, 9999999., 99999, 999, 9999 etc.) to null. Rejects malformed lines and out-of-range DOY/hour values with clear errors. Default URL: `https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2_all_years.dat`.
+
+### Closed loops
+
+- OMNI re-packages Dst from Kyoto WDC. The `dst` column in the hourly table and the `dst_source: measured` tag in `historical_storms.json` now reference the same underlying series — so every 1957+ storm in the catalog has a cross-checkable measured Dst minimum in the hourly data, documented in the analyze output.
+
+### Changed
+
+- `scripts/build.mjs` orchestrates four cadences now (hourly, daily, monthly, yearly) with per-cadence and per-source flags. New flags: `hourly`, `omni`.
+- `scripts/validate.mjs` validates the hourly table with a composite `(date, hour)` monotonicity check.
+- `scripts/analyze.mjs` adds a **"Hourly record (NASA OMNI, 1963+)"** section with coverage, a storm-hour census (moderate/strong/severe/extreme), top-10 lowest Dst hours, top-10 solar-wind speeds, and a **storm-catalog cross-reference** that reads the measured hourly Dst minimum within ±3 days of every measured-era entry in `historical_storms.json` — flagging any Δ > 5 nT between catalog and measured value.
+- `docs/DATA_DICTIONARY.md` — full spec for the hourly table, OMNI column-number reference, provenance note on Dst.
+- `SOURCES.md` — new OMNI section citing King & Papitashvili 2005, documenting which of OMNI's convenience columns (Dst, AE, ap) come from which upstream provider.
+
 ## [0.6.0] - 2026-04-21
 
 ### Added — the long numerical record
@@ -133,7 +152,8 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.7.0
 [0.6.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.6.0
 [0.5.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.5.0
 [0.4.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.4.0

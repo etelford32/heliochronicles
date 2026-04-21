@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { dailyDir, manifestPath, monthlyDir, yearlyDir } from './lib/paths.mjs';
-import { DAILY_COLUMNS, MONTHLY_COLUMNS, YEARLY_COLUMNS } from './lib/schema.mjs';
+import { dailyDir, hourlyDir, manifestPath, monthlyDir, yearlyDir } from './lib/paths.mjs';
+import { DAILY_COLUMNS, HOURLY_COLUMNS, MONTHLY_COLUMNS, YEARLY_COLUMNS } from './lib/schema.mjs';
 import { sha256OfFile } from './lib/checksum.mjs';
 import { log } from './lib/log.mjs';
 
@@ -25,7 +25,7 @@ async function listCSVs(dir) {
   }
 }
 
-async function checkTable({ dir, label, expectedColumns, keyCol, keyValidator, monotonic }) {
+async function checkTable({ dir, label, expectedColumns, keyCol, keyValidator, secondaryKeyCol, monotonic }) {
   const entries = await listCSVs(dir);
   if (entries === null) {
     log.warn(`${label}: directory missing — skipped`);
@@ -37,7 +37,7 @@ async function checkTable({ dir, label, expectedColumns, keyCol, keyValidator, m
   }
 
   const reports = [];
-  let prevKey = null;
+  let prevComposite = null;
   let prevFilename = null;
   for (const filename of entries) {
     const path = resolve(dir, filename);
@@ -51,6 +51,8 @@ async function checkTable({ dir, label, expectedColumns, keyCol, keyValidator, m
     if (header.join(',') !== expectedColumns.join(',')) {
       report(`${filename}: header mismatch\n    expected: ${expectedColumns.join(',')}\n    got:      ${header.join(',')}`);
     }
+    const keyIdx = header.indexOf(keyCol);
+    const secIdx = secondaryKeyCol ? header.indexOf(secondaryKeyCol) : -1;
 
     let rowCount = 0;
     for (let i = 1; i < lines.length; i++) {
@@ -59,18 +61,22 @@ async function checkTable({ dir, label, expectedColumns, keyCol, keyValidator, m
         report(`${filename}:${i + 1}: expected ${expectedColumns.length} cells, got ${cells.length}`);
         continue;
       }
-      const key = cells[header.indexOf(keyCol)];
+      const key = cells[keyIdx];
       const keyError = keyValidator(key);
       if (keyError) {
         report(`${filename}:${i + 1}: bad ${keyCol} "${key}" — ${keyError}`);
         continue;
       }
-      if (monotonic && prevKey !== null) {
-        if (!(key > prevKey)) {
-          report(`${filename}:${i + 1}: ${keyCol} ${key} not strictly after ${prevKey}${prevFilename && prevFilename !== filename ? ` (prev file: ${prevFilename})` : ''}`);
+      // Composite-key monotonic: zero-pad the secondary key so lexicographic
+      // comparison matches numeric comparison (e.g. hour "09" < "10").
+      const sec = secIdx >= 0 ? String(cells[secIdx]).padStart(3, '0') : '';
+      const composite = sec ? `${key}|${sec}` : key;
+      if (monotonic && prevComposite !== null) {
+        if (!(composite > prevComposite)) {
+          report(`${filename}:${i + 1}: ${keyCol}${secondaryKeyCol ? `+${secondaryKeyCol}` : ''} ${composite} not strictly after ${prevComposite}${prevFilename && prevFilename !== filename ? ` (prev file: ${prevFilename})` : ''}`);
         }
       }
-      prevKey = key;
+      prevComposite = composite;
       prevFilename = filename;
       rowCount++;
     }
@@ -128,6 +134,17 @@ async function main() {
     monotonic: true
   });
   await verifyChecksums(daily, 'daily');
+
+  const hourly = await checkTable({
+    dir: hourlyDir,
+    label: 'hourly',
+    expectedColumns: HOURLY_COLUMNS,
+    keyCol: 'date',
+    keyValidator: isIsoDate,
+    secondaryKeyCol: 'hour',
+    monotonic: true
+  });
+  await verifyChecksums(hourly, 'hourly');
 
   const monthly = await checkTable({
     dir: monthlyDir,

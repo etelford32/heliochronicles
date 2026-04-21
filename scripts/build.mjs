@@ -4,6 +4,8 @@ import { log } from './lib/log.mjs';
 import {
   dailyDir,
   groupByChunk,
+  groupHourlyByDecade,
+  hourlyDir,
   monthlyDir,
   yearlyDir
 } from './lib/paths.mjs';
@@ -12,6 +14,7 @@ import { cycleOf, loadCycles, phaseOf } from './lib/cycles.mjs';
 import { composeSources } from './lib/sources.mjs';
 import {
   DAILY_COLUMNS,
+  HOURLY_COLUMNS,
   MONTHLY_COLUMNS,
   YEARLY_COLUMNS
 } from './lib/schema.mjs';
@@ -21,6 +24,7 @@ import { loadSilsoYearly } from './sources/silso-yearly.mjs';
 import { loadGfzDaily } from './sources/gfz-kp.mjs';
 import { loadIsgiAa } from './sources/isgi-aa.mjs';
 import { loadGsn } from './sources/gsn.mjs';
+import { loadOmni } from './sources/omni.mjs';
 
 // ---------- DAILY ----------
 
@@ -96,6 +100,25 @@ async function writeDailyChunks(rows, manifest, sourcesLabel) {
     });
     totalRows += result.rowCount;
     log.ok(`wrote ${filename} — ${result.rowCount} rows`);
+  }
+  return { chunkCount: keys.length, totalRows };
+}
+
+// ---------- HOURLY ----------
+
+async function writeHourly(rows, manifest, sourcesLabel) {
+  const groups = groupHourlyByDecade(rows);
+  const keys = [...groups.keys()].sort();
+  let totalRows = 0;
+  for (const filename of keys) {
+    const filePath = resolve(hourlyDir, filename);
+    const result = await writeCSV(filePath, HOURLY_COLUMNS, groups.get(filename));
+    await recordFile(manifest, filePath, {
+      rowCount: result.rowCount,
+      source: sourcesLabel
+    });
+    totalRows += result.rowCount;
+    log.ok(`wrote ${filename} — ${result.rowCount.toLocaleString()} rows`);
   }
   return { chunkCount: keys.length, totalRows };
 }
@@ -225,7 +248,9 @@ const KNOWN = new Set([
   'silso-monthly',
   'silso-yearly',
   'gsn',
+  'omni',
   'daily',
+  'hourly',
   'monthly',
   'yearly'
 ]);
@@ -247,17 +272,19 @@ async function main() {
   const wantSilsoMonthly = runAll || args.has('silso-monthly') || args.has('monthly');
   const wantSilsoYearly = runAll || args.has('silso-yearly') || args.has('yearly');
   const wantGsn = runAll || args.has('gsn') || args.has('yearly');
+  const wantOmni = runAll || args.has('omni') || args.has('hourly');
 
   // Per-table flags (what to write)
-  const writeDaily = runAll || args.has('daily') || args.has('silso') || args.has('gfz') || args.has('isgi');
-  const writeMonthly = runAll || args.has('monthly') || args.has('silso-monthly');
-  const writeYearly = runAll || args.has('yearly') || args.has('silso-yearly') || args.has('gsn');
+  const shouldWriteDaily = runAll || args.has('daily') || args.has('silso') || args.has('gfz') || args.has('isgi');
+  const shouldWriteHourly = runAll || args.has('hourly') || args.has('omni');
+  const shouldWriteMonthly = runAll || args.has('monthly') || args.has('silso-monthly');
+  const shouldWriteYearly = runAll || args.has('yearly') || args.has('silso-yearly') || args.has('gsn');
 
   log.info('heliochronicles build start');
   const manifest = await loadManifest();
   const cycles = await loadCycles();
 
-  if (writeDaily) {
+  if (shouldWriteDaily) {
     const silsoRows = wantSilso ? await loadSilsoDaily() : [];
     const gfzByDate = wantGfz ? await loadGfzDaily() : new Map();
     const aaByDate = wantIsgi ? await loadIsgiAa() : new Map();
@@ -269,14 +296,20 @@ async function main() {
     await writeDailyChunks(merged, manifest, label);
   }
 
-  if (writeMonthly) {
+  if (shouldWriteHourly) {
+    const rows = wantOmni ? await loadOmni() : [];
+    log.step(`hourly: loaded ${rows.length.toLocaleString()} rows from OMNI`);
+    await writeHourly(rows, manifest, 'OMNI');
+  }
+
+  if (shouldWriteMonthly) {
     const silsoMonthly = wantSilsoMonthly ? await loadSilsoMonthly() : [];
     const merged = mergeMonthly({ silsoMonthly, cycles });
     log.step(`monthly: merged ${merged.length} rows`);
     await writeMonthly(merged, manifest, 'SILSO');
   }
 
-  if (writeYearly) {
+  if (shouldWriteYearly) {
     const silsoYearly = wantSilsoYearly ? await loadSilsoYearly() : [];
     const gsnYearly = wantGsn ? await loadGsn() : [];
     const label = [wantSilsoYearly && 'SILSO', wantGsn && 'GSN']

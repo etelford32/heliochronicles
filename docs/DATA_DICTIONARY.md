@@ -1,7 +1,8 @@
 # Data dictionary
 
-HelioChronicles publishes the numerical record at three native cadences:
+HelioChronicles publishes the numerical record at four native cadences:
 
+- **Hourly** (`data/hourly/hourly_YYYY-YYYY.csv`) — 1963 onward, 12 columns, split into decade chunks. NASA OMNI 2 solar wind, IMF, Dst, ap, AE at 1-hour cadence. The drivers of space weather.
 - **Daily** (`data/daily/daily_YYYY-YYYY.csv`) — 1818 onward, 13 columns, split into 50-year chunks. SILSO total SSN + GFZ Kp/ap + DRAO F10.7 + ISGI aa + cycle metadata.
 - **Monthly** (`data/monthly/monthly_1749-today.csv`) — 1749 onward, 8 columns, single file. SILSO monthly mean SSN with cycle metadata.
 - **Yearly** (`data/yearly/yearly_1610-today.csv`) — 1610 onward, 11 columns, single file. SILSO yearly mean SSN (1700+) joined with the Hoyt-Schatten / Svalgaard-Schatten Group Number reconstruction (1610+). This is the deepest reach of the numerical record — it captures the Maunder Minimum as data rather than narrative.
@@ -43,6 +44,31 @@ One row per calendar day, UTC. Primary key is `date`. Columns are the union of a
 **Missing value convention.** In CSV, an empty cell between commas means null. In JSON, the literal `null` is used. We never use sentinel values like -1 or -9999; upstream sentinels are normalized to null at parse time.
 
 **Column order is stable.** It's defined here and must match the header line emitted by `scripts/build.mjs`. Changing the order is a major version bump per `CONTRIBUTING.md`.
+
+## Hourly table
+
+One row per UTC hour. Composite primary key `(date, hour)`. Coverage 1963-01-01T00 → present. Source: NASA OMNI 2 merged hourly, which composites measurements from multiple L1 spacecraft and re-packages geomagnetic indices (Dst from Kyoto WDC, AE from Kyoto WDC, ap from GFZ) as convenience columns in the same file.
+
+| #  | column      | type        | units         | range / typical    | null when               | OMNI col |
+|----|-------------|-------------|---------------|--------------------|-------------------------|---------:|
+| 1  | `date`      | date (ISO)  | —             | 1963-01-01 → today | never (primary key)     |        — |
+| 2  | `hour`      | int         | hour UT       | 0 – 23             | never (primary key)     |        — |
+| 3  | `v_sw`      | float\|null | km/s          | ~280 – ~2200       | instrument gap          |       25 |
+| 4  | `n_p`       | float\|null | /cm³          | ~0.1 – ~80         | instrument gap          |       24 |
+| 5  | `t_p`       | float\|null | K             | ~5×10³ – ~10⁷      | instrument gap          |       23 |
+| 6  | `b_total`   | float\|null | nT            | ~1 – ~80           | instrument gap          |        9 |
+| 7  | `bz_gsm`    | float\|null | nT            | ~−60 – ~+60        | instrument gap          |       17 |
+| 8  | `pressure`  | float\|null | nPa           | ~0.1 – ~100        | derived from v_sw + n_p |       29 |
+| 9  | `dst`       | int\|null   | nT            | ~+50 – ~−800       | instrument gap          |       41 |
+| 10 | `ap`        | int\|null   | index         | 0 – ~400           | instrument gap          |       50 |
+| 11 | `ae`        | int\|null   | nT            | 0 – ~3500          | instrument gap          |       42 |
+| 12 | `sources`   | string      | —             | always `omni`      | never                   |        — |
+
+**Column subset rationale.** OMNI 2 has 55 columns per hour. We extract the 11 most cited in peer-reviewed space-weather analysis; anyone needing additional fields (Bx/By components, alpha ratio, proton fluxes at various energies, PC(N), AU/AL subcomponents) can fetch from OMNIWeb directly — the `OMNI_URL` in `scripts/sources/omni.mjs` is the canonical all-years dump.
+
+**Provenance note.** The `dst` column here comes from Kyoto WDC's Dst series via OMNI's convenience packaging. This is the *same* series that underpins the `dst_source: measured` tag in `data/events/historical_storms.json` — so every catalog entry in the Dst era (1957+) should match the measured minimum in this table within a few nT.
+
+**Fill values.** OMNI uses a variety of sentinel values depending on field width (999.9, 9999999., 99999, 999, 9999). All are normalized to null at parse time.
 
 ## Monthly table
 
@@ -155,6 +181,7 @@ The file's `_notes_on_antiquity` object documents what is *not* in the catalog: 
 
 ## File layout
 
+- `data/hourly/hourly_YYYY-YYYY.csv` — decade CSV chunks of the hourly table (1963+).
 - `data/daily/daily_YYYY-YYYY.csv` — 50-year CSV chunks of the daily table (1818+).
 - `data/monthly/monthly_1749-today.csv` — single-file monthly SSN (1749+).
 - `data/yearly/yearly_1610-today.csv` — single-file yearly SSN + GSN (1610+).

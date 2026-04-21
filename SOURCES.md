@@ -7,6 +7,22 @@ and publishing. Credit them.
 The `sources` column in each daily row records which of these providers
 contributed to that row, using the tokens in the "Source token" fields below.
 
+## OMNI hourly solar wind, IMF, and geomagnetic indices (1963–present)
+
+- **Source token:** `omni`
+- **Provider:** NASA Space Physics Data Facility (SPDF), Goddard Space Flight Center. OMNI composites measurements from a rotating set of L1 spacecraft (IMP 1, 3, 4, 5, 6, 7, 8; ISEE 3; Wind; ACE; DSCOVR) into a single time-continuous hourly record at 1 AU.
+- **Dataset:** OMNI 2 low-resolution hourly merged solar-wind, IMF, plasma, and geomagnetic indices, 1963+. 55 columns per hour, of which HelioChronicles extracts 11.
+- **Landing page:** https://omniweb.gsfc.nasa.gov/
+- **Direct file:** https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2_all_years.dat
+- **Format spec:** https://omniweb.gsfc.nasa.gov/html/ow_data.html
+- **License:** Public domain (NASA works are not subject to copyright in the United States).
+- **Citation:** King, J. H. & Papitashvili, N. E. (2005). *Solar wind spatial scales in and comparisons of hourly Wind and ACE plasma and magnetic field data.* J. Geophys. Res. 110, A02104. doi:10.1029/2004JA010649
+- **Embedded indices (convenience columns, original providers credited):**
+  - **Dst (nT)** — Kyoto WDC for Geomagnetism. The measured-era Dst values cited in `historical_storms.json` (`dst_source: measured`) come from this same Kyoto series, delivered via OMNI. URL: http://wdc.kugi.kyoto-u.ac.jp/dst_final/
+  - **AE (nT)** — Kyoto WDC. URL: same as Dst.
+  - **ap** — GFZ Potsdam (same source as the daily table's `ap` column).
+- **Notes:** OMNI uses multiple fill-value conventions (999.9, 9999999., 99999, 999, 9999) depending on field type. All are normalized to null. OMNI occasionally updates historical hours when upstream providers republish revised values; re-running `npm run build hourly` picks up such revisions.
+
 ## Group Number reconstruction (1610–1995)
 
 - **Source token:** `gsn`
