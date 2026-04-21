@@ -1,0 +1,28 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The data files in this repository (everything under `data/`) are licensed
+under the Creative Commons Attribution 4.0 International License. You are
+free to share and adapt the data for any purpose, including commercial use,
+provided you give appropriate credit.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Attribution
+-----------
+
+Please cite HelioChronicles and credit the upstream source for any data
+you derive from this repository. See SOURCES.md for per-source attribution
+and CITATION.cff for how to cite the compilation itself.
+
+Suggested attribution line:
+
+    Data from HelioChronicles (https://github.com/etelford32/heliochronicles),
+    derived from SILSO (Royal Observatory of Belgium), GFZ Potsdam, and
+    other upstream providers listed in SOURCES.md. CC BY 4.0.
+
+Code vs. data
+-------------
+
+The data license above applies only to files under `data/`. All source
+code in this repository (`scripts/`, `examples/`, `docs/`, and any other
+code-bearing directory) is licensed under the MIT License — see LICENSE.

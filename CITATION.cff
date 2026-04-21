@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "HelioChronicles: The known history of the Sun"
+message: "If you use this compilation, please cite it and the upstream sources listed in SOURCES.md."
+type: dataset
+authors:
+  - family-names: Telford
+    given-names: Elliot
+    alias: etelford32
+repository-code: "https://github.com/etelford32/heliochronicles"
+url: "https://github.com/etelford32/heliochronicles"
+abstract: >-
+  HelioChronicles is a reproducible, versioned compilation of solar and
+  space-weather observations spanning the modern instrumental record.
+  Daily sunspot numbers from 1818, geomagnetic indices from 1932, solar
+  wind parameters from 1963, and event catalogs from 1996. Packaged as
+  CSV, Parquet, and JSON with JSON Schema definitions and SHA-256 checksums.
+keywords:
+  - solar physics
+  - space weather
+  - sunspot number
+  - geomagnetic activity
+  - heliophysics
+  - solar cycle
+license: MIT
+license-url: "https://github.com/etelford32/heliochronicles/blob/main/LICENSE"
+version: 0.1.0
+date-released: "2026-04-20"

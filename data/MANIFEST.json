@@ -1,0 +1,6 @@
+{
+  "generated_at": null,
+  "generator": "heliochronicles/scripts/build.mjs",
+  "note": "This is a stub. Run `npm run build` to populate with real SHA-256 checksums, row counts, and source attribution per file.",
+  "files": {}
+}
