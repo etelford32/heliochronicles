@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { dailyDir, dataDir, repoRoot } from './lib/paths.mjs';
+import { dailyDir, dataDir, monthlyDir, repoRoot, yearlyDir } from './lib/paths.mjs';
 import { loadCycles } from './lib/cycles.mjs';
 import { DAILY_COLUMNS } from './lib/schema.mjs';
 import { log } from './lib/log.mjs';
@@ -97,6 +97,84 @@ async function tryLoadJSON(relPath) {
     if (err.code === 'ENOENT') return null;
     throw err;
   }
+}
+
+async function tryLoadCSV(dir, filename) {
+  try {
+    const text = await readFile(resolve(dir, filename), 'utf8');
+    const lines = text.split(/\r?\n/).filter((l) => l.length > 0);
+    if (lines.length === 0) return null;
+    const header = lines[0].split(',');
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cells = lines[i].split(',');
+      const row = {};
+      header.forEach((col, idx) => {
+        row[col] = cells[idx] === '' ? null : cells[idx];
+      });
+      rows.push(row);
+    }
+    return rows;
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+}
+
+function yearlyAnalysis(rows) {
+  if (!rows || rows.length === 0) return null;
+  const parsed = rows.map((r) => ({
+    year: Number(r.year),
+    ssn: numeric(r.ssn),
+    gsn: numeric(r.gsn),
+    cycle: numeric(r.cycle),
+    sources: r.sources ?? ''
+  }));
+
+  const earliest = parsed[0];
+  const latest = parsed[parsed.length - 1];
+
+  // Maunder Minimum (1645-1715) — using whatever columns are populated
+  const maunder = parsed.filter((r) => r.year >= 1645 && r.year <= 1715);
+  const maunderMean = mean(maunder.map((r) => r.gsn ?? r.ssn).filter((v) => v !== null));
+
+  const dalton = parsed.filter((r) => r.year >= 1790 && r.year <= 1830);
+  const daltonMean = mean(dalton.map((r) => r.ssn).filter((v) => v !== null));
+
+  const modernMax = parsed.filter((r) => r.year >= 1933 && r.year <= 2008);
+  const modernMaxMean = mean(modernMax.map((r) => r.ssn).filter((v) => v !== null));
+
+  // Per-century means for the SSN era (1700+)
+  const byCentury = new Map();
+  for (const r of parsed) {
+    if (r.ssn === null || r.year < 1700) continue;
+    const century = Math.floor(r.year / 100) * 100;
+    if (!byCentury.has(century)) byCentury.set(century, []);
+    byCentury.get(century).push(r.ssn);
+  }
+  const centuryMeans = [...byCentury.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([century, ssns]) => ({
+      century,
+      mean: mean(ssns),
+      years: ssns.length
+    }));
+
+  // Coverage: what's the earliest year with any value?
+  const firstGsn = parsed.find((r) => r.gsn !== null);
+  const firstSsn = parsed.find((r) => r.ssn !== null);
+
+  return {
+    rows: parsed.length,
+    earliest: earliest.year,
+    latest: latest.year,
+    firstGsn: firstGsn?.year ?? null,
+    firstSsn: firstSsn?.year ?? null,
+    maunder: { years: maunder.length, mean: maunderMean },
+    dalton: { years: dalton.length, mean: daltonMean },
+    modernMax: { years: modernMax.length, mean: modernMaxMean },
+    centuryMeans
+  };
 }
 
 async function tryLoadDailyCSVs() {
@@ -207,19 +285,29 @@ function renderMinimaTable(minima) {
   ].join('\n');
 }
 
+const DST_SOURCE_GLYPH = {
+  measured: 'M',
+  reconstructed: 'R',
+  'estimated-hypothetical': 'H'
+};
+
 function renderStormTable(events) {
   const rows = events.map((e) => {
     const date = e.date_start === e.date_end ? e.date_start : `${e.date_start} – ${e.date_end}`;
-    const dst = e.dst_nT_est === null ? '—' : fmt.signedInt(e.dst_nT_est);
+    const dstVal = e.dst_nT ?? null;
+    const dst = dstVal === null ? '—' : fmt.signedInt(dstVal);
+    const provenance = e.dst_source ? DST_SOURCE_GLYPH[e.dst_source] ?? '?' : '—';
     const flare = e.flare_class_peak ?? '—';
     const scale = e.storm_scale ?? '—';
     const aurora = e.aurora_lat_deg === null ? '—' : `${e.aurora_lat_deg}°`;
-    return `| ${date} | ${e.name} | SC${e.cycle} | ${flare} | ${dst} | ${scale} | ${aurora} |`;
+    return `| ${date} | ${e.name} | SC${e.cycle} | ${flare} | ${dst} | ${provenance} | ${scale} | ${aurora} |`;
   });
   return [
-    '| Date(s) | Event | Cycle | Peak flare | Dst est. (nT) | G-scale | Lowest aurora lat. |',
-    '|:-------:|:------|:-----:|:-----------|--------------:|:-------:|:------------------:|',
-    ...rows
+    '| Date(s) | Event | Cycle | Peak flare | Dst (nT) | Src | G-scale | Lowest aurora lat. |',
+    '|:-------:|:------|:-----:|:-----------|---------:|:---:|:-------:|:------------------:|',
+    ...rows,
+    '',
+    '_Src legend — **M** = measured (Kyoto WDC, 1957+); **R** = reconstructed from pre-Dst magnetogram archives; **H** = estimated-hypothetical (CME modelled but missed Earth)._'
   ].join('\n');
 }
 
@@ -289,7 +377,7 @@ function auroraAnalysis(observations) {
   };
 }
 
-function renderReport({ cycles, cyc, minima, storms, auroras, daily, schemaColumns }) {
+function renderReport({ cycles, cyc, minima, storms, auroras, daily, yearly, schemaColumns }) {
   const lines = [];
   lines.push('# HelioChronicles — Historical Analysis');
   lines.push('');
@@ -298,6 +386,7 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, schemaColum
   if (minima) pieces.push('`data/cycles/grand_minima.json`');
   if (storms) pieces.push('`data/events/historical_storms.json`');
   if (auroras) pieces.push('`data/events/aurora_observations.json`');
+  if (yearly) pieces.push('`data/yearly/yearly_1610-today.csv`');
   if (daily) pieces.push('`data/daily/*.csv`');
   lines.push(`Generated ${generated} from ${pieces.join(', ')}.`);
   lines.push('');
@@ -305,6 +394,38 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, schemaColum
   lines.push('');
   lines.push('---');
   lines.push('');
+
+  // Section 0 — Long-record context (only present once yearly data is built)
+  if (yearly) {
+    lines.push('## The long numerical record (1610 → today)');
+    lines.push('');
+    const spanYears = yearly.latest - yearly.earliest;
+    lines.push(`${yearly.rows.toLocaleString()} yearly rows covering **${yearly.earliest} to ${yearly.latest}** — a ${spanYears}-year window of quantitative solar-activity data, assembled from SILSO's yearly mean sunspot number (from ${yearly.firstSsn ?? '—'}) and the Hoyt-Schatten/Svalgaard-Schatten Group Number reconstruction (from ${yearly.firstGsn ?? '—'}).`);
+    lines.push('');
+    lines.push(`- **Deepest numerical reach:** ${yearly.firstGsn ?? '—'} CE — the telescopic era. Beyond this, only cosmogenic-isotope reconstructions and the aurora catalog below.`);
+    if (yearly.maunder.mean !== null) {
+      lines.push(`- **Maunder Minimum as data (1645–1715):** mean annual activity ≈ **${fmt.num(yearly.maunder.mean, 1)}** across ${yearly.maunder.years} years. For reference, the post-1933 mean is ${fmt.num(yearly.modernMax.mean, 1)} — roughly ${(yearly.modernMax.mean / Math.max(yearly.maunder.mean, 0.1)).toFixed(0)}× the Maunder level.`);
+    }
+    if (yearly.dalton.mean !== null) {
+      lines.push(`- **Dalton Minimum (1790–1830):** mean annual SSN **${fmt.num(yearly.dalton.mean, 1)}** across ${yearly.dalton.years} years — depressed but not absent, directly visible as SC5–SC7 in the daily record.`);
+    }
+    if (yearly.modernMax.mean !== null) {
+      lines.push(`- **Modern Maximum (1933–2008):** mean annual SSN **${fmt.num(yearly.modernMax.mean, 1)}** across ${yearly.modernMax.years} years — the strongest sustained activity of the instrumental era.`);
+    }
+    lines.push('');
+    if (yearly.centuryMeans.length > 0) {
+      lines.push('### Per-century mean SSN (1700+)');
+      lines.push('');
+      lines.push('| Century | Years | Mean annual SSN |');
+      lines.push('|--------:|------:|----------------:|');
+      for (const c of yearly.centuryMeans) {
+        lines.push(`| ${c.century}s | ${c.years} | ${fmt.num(c.mean, 1)} |`);
+      }
+      lines.push('');
+    }
+    lines.push('---');
+    lines.push('');
+  }
 
   // Section 1 — Cycles at a glance
   lines.push('## Solar cycles at a glance');
@@ -483,7 +604,8 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, schemaColum
   lines.push(`- Cycle boundaries and peak SSN values are hand-curated from the SIDC-SILSO published cycle table, stored in \`data/cycles/solar_cycles.json\`.`);
   lines.push(`- Peak SSN values are **smoothed monthly means** at the reported maximum month, V2.0 scale. Daily values in \`data/daily/\` are raw (unsmoothed) and therefore peak higher than the cycle peak value.`);
   if (minima) lines.push(`- Grand minima boundaries in \`data/cycles/grand_minima.json\` are approximate. Telescopic minima (Maunder, Dalton) are from direct observation; pre-telescopic minima are from cosmogenic isotope reconstructions with uncertainty on the order of decades.`);
-  if (storms) lines.push(`- Historical storms in \`data/events/historical_storms.json\` are hand-curated from peer-reviewed sources. \`dst_nT_est\` values before the satellite era (pre-1957) are reconstructions from magnetogram archives with order-of-magnitude uncertainty. See each event's \`sources\` list for the primary reference.`);
+  if (storms) lines.push(`- Historical storms in \`data/events/historical_storms.json\` are hand-curated from peer-reviewed sources. Every entry carries a \`dst_source\` tag distinguishing **measured** values from Kyoto WDC (1957+), **reconstructed** values from pre-Dst magnetogram archives (Kew/Greenwich/Colaba/Göttingen), and **estimated-hypothetical** values for the 2012 near-miss CME that never hit Earth.`);
+  if (yearly) lines.push(`- The yearly long-record table (\`data/yearly/yearly_1610-today.csv\`) combines SILSO yearly mean SSN (1700+) with the Hoyt-Schatten / Svalgaard-Schatten Group Number reconstruction (1610+). The GSN is published on a harmonized scale with the modern SSN but carries higher uncertainty in early decades; the \`gsn_observers\` column indicates how many observer reports underlie each year.`);
   if (auroras) lines.push(`- Pre-instrumental aurora observations in \`data/events/aurora_observations.json\` are identifications made by modern paleoaurora researchers from historical chronicles; the cited paper did the work of distinguishing aurora from meteor, comet, and atmospheric optical phenomena. Identification confidence is preserved per entry. This catalog cannot be used for quantitative intensity reconstruction — only the lowest-latitude reach of visible aurora is available as a qualitative storm-strength indicator.`);
   lines.push(`- Era groupings are a convention of this report, not a formally defined solar-physics classification.`);
   lines.push(`- The daily table follows the 13-column spec in \`docs/DATA_DICTIONARY.md\`: ${schemaColumns.join(', ')}.`);
@@ -509,6 +631,9 @@ async function main() {
   const auroras = auroraAnalysis(auroraDoc?.observations ?? null);
   if (auroras) log.ok(`loaded ${auroras.total} pre-instrumental aurora observations`);
 
+  const yearly = yearlyAnalysis(await tryLoadCSV(yearlyDir, 'yearly_1610-today.csv'));
+  if (yearly) log.ok(`loaded yearly long-record: ${yearly.rows} rows (${yearly.earliest} → ${yearly.latest})`);
+
   const daily = dailyAnalysis(await tryLoadDailyCSVs());
 
   const report = renderReport({
@@ -518,6 +643,7 @@ async function main() {
     storms,
     auroras,
     daily,
+    yearly,
     schemaColumns: DAILY_COLUMNS
   });
   await writeFile(ANALYSIS_PATH, report, 'utf8');

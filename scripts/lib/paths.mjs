@@ -5,6 +5,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 export const repoRoot = resolve(here, '..', '..');
 export const dataDir = resolve(repoRoot, 'data');
 export const dailyDir = resolve(dataDir, 'daily');
+export const monthlyDir = resolve(dataDir, 'monthly');
+export const yearlyDir = resolve(dataDir, 'yearly');
 export const schemasDir = resolve(repoRoot, 'schemas');
 export const manifestPath = resolve(dataDir, 'MANIFEST.json');
 

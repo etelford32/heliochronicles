@@ -220,8 +220,8 @@
       "description": "The most widely recorded extreme aurora event before Carrington. Japanese diaries record 'red skies' visible at low geomagnetic latitudes for multiple consecutive nights; contemporaneous Chinese, Korean, European, and North American records confirm global scope.",
       "identification_confidence": "high",
       "latitude_indicator": "low",
-      "cycle": 3,
-      "significance": "Argued by Hayakawa et al. 2017 to be comparable to or larger than the 1859 Carrington Event in intensity. Over 100 independent sightings catalogued across four continents, with aurora reported at geomagnetic latitudes below 20°. The pre-Carrington benchmark.",
+      "cycle": 2,
+      "significance": "Argued by Hayakawa et al. 2017 to be comparable to or larger than the 1859 Carrington Event in intensity. Over 100 independent sightings catalogued across four continents, with aurora reported at geomagnetic latitudes below 20°. Occurs about a year after SC2's 1769-09 maximum — the pre-Carrington benchmark.",
       "sources": [
         { "citation": "Hayakawa, H. et al. (2017). Long-lasting extreme magnetic storm activities in 1770 found in historical documents. ApJ Letters 850, L31.", "doi": "10.3847/2041-8213/aa9661" },
         { "citation": "Love, J. J. (2018). The electric storm of November 1882. Space Weather 16, 37." }
@@ -237,8 +237,8 @@
       "description": "An extreme low-latitude aurora event recorded in Japanese, Chinese, and North American colonial records. Less globally documented than 1770 but comparable in latitude reach.",
       "identification_confidence": "high",
       "latitude_indicator": "low",
-      "cycle": 3,
-      "significance": "Shows that SC3 (1775 peak) produced at least two Carrington-class candidate events within four years — a pattern consistent with the cycle's high amplitude (peak SSN ~264).",
+      "cycle": 2,
+      "significance": "Pairs with the September 1770 event to make SC2 the only cycle in the 1755+ record to produce two candidate Carrington-class storms despite a moderate cycle amplitude (peak SSN 193), reinforcing that extreme-storm likelihood is not a simple function of cycle amplitude. Occurs in SC2's declining phase.",
       "sources": [
         { "citation": "Hayakawa, H. et al. (2018). A great space weather event in February 1730. Astron. Astrophys. 616, A177.", "doi": "10.1051/0004-6361/201832735" },
         { "citation": "Hayakawa, H. et al. (2020). The extreme space weather event in September 1909. MNRAS 497, 690." }

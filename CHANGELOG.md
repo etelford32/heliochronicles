@@ -10,6 +10,38 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-04-21
+
+### Added — the long numerical record
+
+- **`data/yearly/yearly_1610-today.csv`** — single-file yearly table combining SILSO yearly mean SSN (1700+) with the Hoyt-Schatten / Svalgaard-Schatten / Chatzistergos Group Number reconstruction (1610+). This is the deepest reach of the numerical record and makes the **Maunder Minimum visible as data** rather than only as narrative. 11 columns: year, ssn, ssn_stddev, ssn_stations, ssn_provisional, gsn, gsn_stddev, gsn_observers, cycle, cycle_phase, sources.
+- **`data/monthly/monthly_1749-today.csv`** — single-file monthly SILSO mean SSN back to 1749, bridging the 1700–1817 gap between the yearly record and the 1818+ daily record. 8 columns.
+- Three new source modules:
+  - `scripts/sources/silso-yearly.mjs` — SILSO yearly V2.0 (5-field semicolon CSV, 1700+).
+  - `scripts/sources/silso-monthly.mjs` — SILSO monthly V2.0 (7-field semicolon CSV, 1749+).
+  - `scripts/sources/gsn.mjs` — SILSO Group Number V2.0 (5-field semicolon CSV, 1610+).
+
+### Changed — standardization across storm catalog
+
+- **`data/events/historical_storms.json`** renames `dst_nT_est` → **`dst_nT`** and adds a new **`dst_source`** field on every entry, distinguishing at a glance:
+  - **8 measured** (1957+ Dst era): 1972 Aug, Quebec 1989, Bastille 2000, Halloween 2003, Sept 2005, Sept 2017, Gannon 2024, Oct 2024.
+  - **4 reconstructed** (pre-Dst magnetogram archives): Carrington 1859, Feb 1872, NY Railroad 1921, Easter Sunday 1940.
+  - **1 estimated-hypothetical** (CME modelled but missed Earth): July 2012 near-miss.
+  - **1 null** (no Dst relevant): Feb 1956 GLE.
+- Corrected cycle attribution in `data/events/aurora_observations.json`: the 1770 and 1774 Hayakawa events were tagged as SC3 but per SIDC's canonical boundaries (SC2 ran 1766-06 → 1775-06) both fall inside SC2. Significance text updated to reflect that SC2 produced *two* Carrington-class candidates despite only moderate amplitude (peak SSN 193).
+
+### Changed — build and analysis
+
+- **`scripts/build.mjs`** now orchestrates three cadences (daily, monthly, yearly) with per-cadence and per-source CLI flags. `npm run build` rebuilds everything; `npm run build yearly` fetches just the yearly sources; fine-grained flags (`silso`, `gfz`, `isgi`, `silso-monthly`, `silso-yearly`, `gsn`) are available for testing individual parsers.
+- **`scripts/validate.mjs`** now validates all three tables against their schemas and checksums.
+- **`scripts/analyze.mjs`** gains a **"The long numerical record (1610 → today)"** section that lands first in `docs/ANALYSIS.md`, with: the Maunder-Minimum mean computed from the GSN reconstruction, Dalton-Minimum mean from SSN, Modern-Maximum mean, and a per-century SSN summary. The storm table gains a `Src` column showing measured/reconstructed/hypothetical provenance with a legend.
+
+### Documentation
+
+- `docs/DATA_DICTIONARY.md` — full specs for the new monthly and yearly tables; clarification on combining `ssn` and `gsn` in the yearly table; `dst_nT` + `dst_source` fields documented.
+- `SOURCES.md` — new primary section for GSN citing Hoyt & Schatten 1998, Svalgaard & Schatten 2016, Chatzistergos et al. 2017. The three SILSO cadences (daily, monthly, yearly) consolidated under one header.
+- `data/events/README.md` — `dst_source` conventions.
+
 ## [0.5.0] - 2026-04-21
 
 ### Added
@@ -101,7 +133,8 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.6.0
 [0.5.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.5.0
 [0.4.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.4.0
 [0.3.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.3.0
