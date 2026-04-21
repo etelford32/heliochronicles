@@ -17,7 +17,7 @@ that source didn't cover that day.
 | 7 | `f107_adj`         | float   | sfu         | ~60 – ~400                    | no observation                 | DRAO via LISIRD | 1947+  |
 | 8 | `kp_sum`           | float   | index       | 0.0 – 72.0 (thirds)           | any 3-hr Kp missing            | GFZ Potsdam     | 1932+  |
 | 9 | `ap`               | int     | nT          | 0 – ~400                      | all 3-hr ap missing            | GFZ Potsdam     | 1932+  |
-| 10| `aa`               | int     | nT          | 0 – ~500                      | no observation                 | ISGI            | 1868+  |
+| 10| `aa`               | int     | nT          | 0 – ~500                      | no observation                 | ISGI / BGS      | 1868+  |
 | 11| `cycle`            | int     | —           | 1 – 25                        | date predates SC1 (before 1755) | curated boundaries | 1755+ |
 | 12| `cycle_phase`      | enum    | —           | `rising` / `max` / `falling` / `min` | date outside known cycles | computed        | 1755+  |
 | 13| `sources`          | string  | —           | csv of source tokens          | never                          | computed        | all    |

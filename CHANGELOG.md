@@ -10,6 +10,21 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-21
+
+### Added
+
+- **`scripts/sources/isgi-aa.mjs`** — first working ISGI/BGS aa-index parser. Extends the geomagnetic record 64 years before Kp, back to 1868. The parser accepts both canonical formats:
+  - 12-field full: `YYYY MM DD aa1 aa2 aa3 aa4 aa5 aa6 aa7 aa8 Aa_daily`
+  - 4-field daily-only: `YYYY MM DD Aa_daily`
+  - Sentinels -1, 999, and 9999 all normalized to null.
+- Wired into `scripts/build.mjs` via the `isgi` source flag; already present in the merge pipeline. Running `npm run build` with network populates the `aa` column from 1868 onward; the Carrington (1859) event remains reconstruction-only (pre-dates the aa series by 9 years), but the **1872 Great Magnetic Storm**, the **New York Railroad Storm (1921)**, and every event since will have a measured aa value.
+
+### Changed
+
+- `SOURCES.md` promotes ISGI aa from "Planned, not yet integrated" to an active source. Mayaud (1972) cited as the primary reference; BGS and ISGI endpoints both documented.
+- `docs/DATA_DICTIONARY.md` — `aa` column source updated to "ISGI / BGS".
+
 ## [0.3.0] - 2026-04-21
 
 ### Added — historical content
@@ -62,7 +77,8 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.4.0
 [0.3.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.3.0
 [0.2.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.2.0
 [0.1.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.1.0

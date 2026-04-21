@@ -61,15 +61,18 @@ contributed to that row, using the tokens in the "Source token" fields below.
   - NOAA SWPC event archive and storm reports: https://www.swpc.noaa.gov/
 - **License:** CC BY 4.0 for the compiled table. Individual event descriptions may quote cited works under fair-use for commentary and reference; full citations are provided for every entry.
 
-## Planned, not yet integrated
-
-### aa geomagnetic index (1868–present)
+## aa geomagnetic index (1868–present)
 
 - **Source token:** `isgi`
-- **Provider:** International Service of Geomagnetic Indices (ISGI), in cooperation with the British Geological Survey.
-- **URL:** https://isgi.unistra.fr/
-- **Status:** stub present (`scripts/sources/isgi-aa.mjs`); parser pending format verification. Targeted for v0.3. Will extend the geomagnetic record 64 years before Kp.
-- **License:** varies by delivery endpoint; will be documented with the parser.
+- **Provider:** International Service of Geomagnetic Indices (ISGI), in cooperation with the British Geological Survey (BGS, Edinburgh). aa was introduced by Mayaud (1972); the modern series is maintained through two nearly antipodal observatories (Hartland, UK and Canberra, Australia since 1957; earlier via Greenwich/Melbourne and Kew/Toolangi).
+- **Dataset:** Daily aa index (nT), derived from the 8 three-hourly aa values.
+- **URL:** https://isgi.unistra.fr/indices_aa.php
+- **Direct text file (BGS canonical dump):** https://geomag.bgs.ac.uk/data_service/data/magnetic_indices/aaindex/aaindex.txt
+- **License:** CC BY 4.0 (ISGI data terms). The BGS-hosted text file is distributed under the same terms.
+- **Citation:** Mayaud, P. N. (1972). The aa indices: A 100-year series characterizing the magnetic activity. J. Geophys. Res. 77, 6870. doi:10.1029/JA077i034p06870
+- **Notes:** aa extends the geomagnetic record 64 years before Kp (1932+). Sentinel values -1, 999, and 9999 all appear in historical dumps; all normalized to null. The Parser in `scripts/sources/isgi-aa.mjs` accepts both the 12-field full format (`YYYY MM DD aa1..aa8 Aa`) and the 4-field daily-only form (`YYYY MM DD Aa`).
+
+## Planned, not yet integrated
 
 ### Solar wind & IMF (1963–present)
 
