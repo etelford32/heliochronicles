@@ -1,0 +1,317 @@
+{
+  "_schema": "Major documented geomagnetic and solar events in the historical record. Each entry is hand-curated from peer-reviewed literature and agency reports; see the `sources` array for each event. Dates are UTC. Intensity estimates in parentheses carry the uncertainty noted in the cited works — pre-satellite events often have estimated Dst values reconstructed from magnetogram archives. Curator: HelioChronicles. Last reviewed 2026-04.",
+  "_fields": {
+    "id":                "stable slug, used in cross-references",
+    "name":              "common name, as it appears in the literature",
+    "date_start":        "ISO date (UTC) of onset — usually the driver (flare/CME) or first storm activity",
+    "date_end":          "ISO date (UTC) of primary storm end; same as start for single-day events",
+    "type":              "storm | flare | cme | gle | carrington-class",
+    "flare_class_peak":  "X-ray class of the associated or driving flare (string, e.g. 'X28+'); null if pre-satellite",
+    "dst_nT_est":        "estimated minimum Dst in nT (negative); null when no magnetogram data exists",
+    "storm_scale":       "NOAA G-scale class (G1..G5); null for historical events outside the modern scale",
+    "aurora_lat_deg":    "lowest reported geomagnetic latitude of visible aurora, approximate",
+    "cycle":             "solar cycle number at the time of the event",
+    "significance":      "one-sentence plain-English rationale for inclusion",
+    "effects":           "list of documented real-world effects",
+    "sources":           "list of citations — papers, agency reports, observational logs"
+  },
+  "events": [
+    {
+      "id": "carrington-1859",
+      "name": "Carrington Event",
+      "date_start": "1859-09-01",
+      "date_end": "1859-09-02",
+      "type": "carrington-class",
+      "flare_class_peak": "X45±",
+      "dst_nT_est": -900,
+      "storm_scale": null,
+      "aurora_lat_deg": 23,
+      "cycle": 10,
+      "significance": "The benchmark extreme solar event. Aurora observed in the Caribbean; telegraph systems failed or operated without battery power from induced currents.",
+      "effects": [
+        "Telegraph operators shocked; paper records caught fire",
+        "Auroras reported in Cuba, Colombia, Hawaii, and central Mexico",
+        "Magnetograms at Kew (London) and Colaba (Bombay) went off-scale"
+      ],
+      "sources": [
+        { "citation": "Carrington, R. C. (1859). Description of a Singular Appearance seen in the Sun on September 1, 1859. MNRAS 20, 13." },
+        { "citation": "Cliver, E. W. & Dietrich, W. F. (2013). The 1859 space weather event revisited: limits of extreme activity. J. Space Weather Space Clim. 3, A31.", "doi": "10.1051/swsc/2013053" },
+        { "citation": "Tsurutani, B. T. et al. (2003). The extreme magnetic storm of 1–2 September 1859. JGR 108, 1268.", "doi": "10.1029/2002JA009504" }
+      ]
+    },
+    {
+      "id": "feb-1872",
+      "name": "Great Magnetic Storm of February 1872",
+      "date_start": "1872-02-04",
+      "date_end": "1872-02-04",
+      "type": "storm",
+      "flare_class_peak": null,
+      "dst_nT_est": -830,
+      "storm_scale": null,
+      "aurora_lat_deg": 20,
+      "cycle": 11,
+      "significance": "Aurora seen from Mumbai, Khartoum, and Santiago. Among the lowest-latitude aurora records in history; comparable in intensity to Carrington.",
+      "effects": [
+        "Aurora logs from Egypt, India, Chile, and Japan",
+        "Telegraph disruption across North America and Europe"
+      ],
+      "sources": [
+        { "citation": "Hayakawa, H. et al. (2018). The Great Space Weather Event during 1872 February Recorded in East Asia. ApJ 862, 15.", "doi": "10.3847/1538-4357/aaca40" }
+      ]
+    },
+    {
+      "id": "may-1921",
+      "name": "New York Railroad Storm",
+      "date_start": "1921-05-13",
+      "date_end": "1921-05-15",
+      "type": "storm",
+      "flare_class_peak": null,
+      "dst_nT_est": -907,
+      "storm_scale": null,
+      "aurora_lat_deg": 25,
+      "cycle": 15,
+      "significance": "Largest storm of the 20th century before 1989. Railroad and telegraph systems across the US and Europe failed; a fire at Central New England Railroad's control tower was attributed to induced currents.",
+      "effects": [
+        "Signal and telegraph fires in New York and Sweden",
+        "Aurora reported as far south as Pasadena, CA and Samoa",
+        "Transatlantic cable traffic halted"
+      ],
+      "sources": [
+        { "citation": "Hapgood, M. (2019). The Great Storm of May 1921: An Exemplar of a Dangerous Space Weather Event. Space Weather 17, 950–975.", "doi": "10.1029/2019SW002195" },
+        { "citation": "Love, J. J. et al. (2019). On the intensity of the magnetic superstorm of September 1909. Space Weather 17, 37–45.", "doi": "10.1029/2018SW002079" }
+      ]
+    },
+    {
+      "id": "march-1940",
+      "name": "Easter Sunday Storm",
+      "date_start": "1940-03-24",
+      "date_end": "1940-03-25",
+      "type": "storm",
+      "flare_class_peak": null,
+      "dst_nT_est": -389,
+      "storm_scale": null,
+      "aurora_lat_deg": 30,
+      "cycle": 17,
+      "significance": "First major storm of the instrumental Ap era; reference point for 20th-century storm characterization.",
+      "effects": [
+        "Long-distance telephone and radio service disrupted",
+        "Aurora visible across the continental US"
+      ],
+      "sources": [
+        { "citation": "Lanzerotti, L. J. (2017). Space weather strikes. Physics Today 70, 7, 9.", "doi": "10.1063/PT.3.3614" }
+      ]
+    },
+    {
+      "id": "feb-1956-gle",
+      "name": "23 February 1956 Ground-Level Enhancement",
+      "date_start": "1956-02-23",
+      "date_end": "1956-02-23",
+      "type": "gle",
+      "flare_class_peak": "X∞",
+      "dst_nT_est": null,
+      "storm_scale": null,
+      "aurora_lat_deg": null,
+      "cycle": 19,
+      "significance": "The largest solar proton event in the modern record (GLE #5). Reference event for radiation-hardening standards.",
+      "effects": [
+        "Neutron monitor counts increased by ~4500% at mid-latitudes",
+        "Still the benchmark proton event for spacecraft shielding analysis"
+      ],
+      "sources": [
+        { "citation": "Meyer, P., Parker, E. N. & Simpson, J. A. (1956). Solar Cosmic Rays of February 1956 and their Propagation through Interplanetary Space. Phys. Rev. 104, 768.", "doi": "10.1103/PhysRev.104.768" }
+      ]
+    },
+    {
+      "id": "aug-1972",
+      "name": "August 1972 Event",
+      "date_start": "1972-08-02",
+      "date_end": "1972-08-11",
+      "type": "flare",
+      "flare_class_peak": "X5+",
+      "dst_nT_est": -125,
+      "storm_scale": null,
+      "aurora_lat_deg": 35,
+      "cycle": 20,
+      "significance": "Fastest transit time to Earth (14.6 hours) for any recorded CME. Occurred between Apollo 16 and Apollo 17; radiation dose would have been fatal or near-fatal to astronauts on the lunar surface.",
+      "effects": [
+        "Detonated dozens of U.S. Navy magnetic-influence sea mines off Hai Phong harbor",
+        "Radio and power-grid disturbances in North America",
+        "Declassified in 2018 as a U.S. Navy operational incident"
+      ],
+      "sources": [
+        { "citation": "Knipp, D. J. et al. (2018). On the Little-Known Consequences of the 4 August 1972 Ultra-Fast Coronal Mass Ejecta. Space Weather 16, 1635–1643.", "doi": "10.1029/2018SW002024" }
+      ]
+    },
+    {
+      "id": "march-1989",
+      "name": "Quebec Blackout Storm",
+      "date_start": "1989-03-10",
+      "date_end": "1989-03-14",
+      "type": "storm",
+      "flare_class_peak": "X4.5",
+      "dst_nT_est": -589,
+      "storm_scale": "G5",
+      "aurora_lat_deg": 25,
+      "cycle": 22,
+      "significance": "Collapsed the Hydro-Québec grid in 90 seconds; 6 million people lost power for up to 9 hours. The modern canonical 'real-world damage' geomagnetic storm.",
+      "effects": [
+        "Hydro-Québec system blackout, ~$2 B CAD in damage and recovery",
+        "Transformer damage at the Salem Nuclear Plant, New Jersey",
+        "Aurora visible in Florida, Cuba, and Texas"
+      ],
+      "sources": [
+        { "citation": "Boteler, D. H. (2019). A 21st Century View of the March 1989 Magnetic Storm. Space Weather 17, 1427–1441.", "doi": "10.1029/2019SW002278" },
+        { "citation": "North American Electric Reliability Corporation (1990). March 13, 1989 Geomagnetic Disturbance." }
+      ]
+    },
+    {
+      "id": "bastille-2000",
+      "name": "Bastille Day Event",
+      "date_start": "2000-07-14",
+      "date_end": "2000-07-16",
+      "type": "flare",
+      "flare_class_peak": "X5.7",
+      "dst_nT_est": -301,
+      "storm_scale": "G5",
+      "aurora_lat_deg": 35,
+      "cycle": 23,
+      "significance": "Among the first fully space-instrumented major events; provided the modern CME-timing template used by operational space-weather forecasts.",
+      "effects": [
+        "Spacecraft anomalies on ASCA (lost), GOES, and SOHO",
+        "Polar-route airline rerouting",
+        "GPS accuracy degraded by tens of meters"
+      ],
+      "sources": [
+        { "citation": "Smith, Z. et al. (2003). A comparison of the bastille day event (2000 July 14) with the Halloween storm (2003 October 29). Solar Phys. 225, 377." },
+        { "citation": "NOAA SWPC event report, July 2000." }
+      ]
+    },
+    {
+      "id": "halloween-2003",
+      "name": "Halloween Storms",
+      "date_start": "2003-10-19",
+      "date_end": "2003-11-07",
+      "type": "storm",
+      "flare_class_peak": "X28+",
+      "dst_nT_est": -383,
+      "storm_scale": "G5",
+      "aurora_lat_deg": 28,
+      "cycle": 23,
+      "significance": "Two X17 flares and one X28+ flare (off-scale, largest ever directly observed) inside two weeks; the largest multi-storm sequence of the satellite era.",
+      "effects": [
+        "Swedish city of Malmö lost power (~50,000 customers)",
+        "Mars Odyssey's MARIE radiation instrument permanently damaged",
+        "Airlines rerouted across polar corridors for a week",
+        "FAA declared the first-ever space-weather flight diversion advisory"
+      ],
+      "sources": [
+        { "citation": "Gopalswamy, N. et al. (2005). Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003. J. Geophys. Res. 110, A09S15.", "doi": "10.1029/2004JA010958" },
+        { "citation": "NOAA SWPC (2004). Halloween storms event review." }
+      ]
+    },
+    {
+      "id": "sept-2005",
+      "name": "September 2005 X17 Flare Series",
+      "date_start": "2005-09-07",
+      "date_end": "2005-09-13",
+      "type": "flare",
+      "flare_class_peak": "X17",
+      "dst_nT_est": -139,
+      "storm_scale": "G4",
+      "aurora_lat_deg": 40,
+      "cycle": 23,
+      "significance": "The most flare-productive active region (AR10808) of SC23, producing nine X-class flares in a week.",
+      "effects": [
+        "Short-wave radio blackouts lasting hours",
+        "GPS position errors up to tens of meters"
+      ],
+      "sources": [
+        { "citation": "NOAA SWPC event archive, September 2005." }
+      ]
+    },
+    {
+      "id": "july-2012-near-miss",
+      "name": "July 2012 Near-Miss CME",
+      "date_start": "2012-07-23",
+      "date_end": "2012-07-23",
+      "type": "cme",
+      "flare_class_peak": "X2.5+",
+      "dst_nT_est": -1200,
+      "storm_scale": null,
+      "aurora_lat_deg": null,
+      "cycle": 24,
+      "significance": "STEREO-A measured a CME whose solar-wind speed at 1 AU reached ~2200 km/s — Carrington-class. Earth was ahead of the ejection direction by ~9 days; a direct hit would have produced the largest storm of the instrumental era.",
+      "effects": [
+        "No terrestrial effects — Earth was not in the path",
+        "Observed only because STEREO-A was ahead of Earth in its orbit"
+      ],
+      "sources": [
+        { "citation": "Baker, D. N. et al. (2013). A major solar eruptive event in July 2012: Defining extreme space weather scenarios. Space Weather 11, 585–591.", "doi": "10.1002/swe.20097" },
+        { "citation": "Liu, Y. D. et al. (2014). Observations of an extreme storm in interplanetary space caused by successive coronal mass ejections. Nat. Commun. 5, 3481.", "doi": "10.1038/ncomms4481" }
+      ]
+    },
+    {
+      "id": "sept-2017",
+      "name": "September 2017 Flares and Storm",
+      "date_start": "2017-09-06",
+      "date_end": "2017-09-10",
+      "type": "flare",
+      "flare_class_peak": "X9.3",
+      "dst_nT_est": -142,
+      "storm_scale": "G4",
+      "aurora_lat_deg": 40,
+      "cycle": 24,
+      "significance": "Largest flare of SC24 (X9.3, September 6); reminder that weak cycles can still produce extreme events. Occurred near solar minimum, against forecast expectations.",
+      "effects": [
+        "Radio blackouts across the sunlit side of Earth",
+        "Amateur radio and aviation HF disrupted during Atlantic hurricane response"
+      ],
+      "sources": [
+        { "citation": "Redmon, R. J. et al. (2018). September 2017's geoeffective space weather and impacts to caribbean radio communications during hurricane response. Space Weather 16, 1190–1201.", "doi": "10.1029/2018SW001897" }
+      ]
+    },
+    {
+      "id": "gannon-2024",
+      "name": "Gannon Storm (Mother's Day Storm)",
+      "date_start": "2024-05-10",
+      "date_end": "2024-05-12",
+      "type": "storm",
+      "flare_class_peak": "X5.8",
+      "dst_nT_est": -412,
+      "storm_scale": "G5",
+      "aurora_lat_deg": 26,
+      "cycle": 25,
+      "significance": "First G5 storm since Halloween 2003. Named posthumously for space-weather scientist Jennifer Gannon. Produced aurora across all 50 US states, widespread sightings at subtropical latitudes.",
+      "effects": [
+        "~40% of SpaceX Starlink satellites experienced increased drag, some deorbited early",
+        "GPS positional errors up to meters for days",
+        "Aurora photographed from Puerto Rico, Mexico, Kenya, and India",
+        "No major power-grid outages reported"
+      ],
+      "sources": [
+        { "citation": "NOAA SWPC (2024). Mother's Day Geomagnetic Storm." },
+        { "citation": "Parker, W. E. & Linares, R. (2024). Satellite Drag Analysis During the May 2024 Gannon Geomagnetic Storm. AIAA preprint." }
+      ]
+    },
+    {
+      "id": "october-2024",
+      "name": "October 2024 G4 Storm",
+      "date_start": "2024-10-10",
+      "date_end": "2024-10-11",
+      "type": "storm",
+      "flare_class_peak": "X1.8",
+      "dst_nT_est": -335,
+      "storm_scale": "G4",
+      "aurora_lat_deg": 30,
+      "cycle": 25,
+      "significance": "Second major SC25 storm within 5 months of Gannon. Lower-latitude aurora across continental Europe, North America, and northern Africa.",
+      "effects": [
+        "Aurora visible from Florida, southern France, and Greece",
+        "Short-wave radio blackouts across Americas"
+      ],
+      "sources": [
+        { "citation": "NOAA SWPC (2024). October 2024 G4 storm event summary." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+# Event catalogs
+
+Per-event records of notable solar and geomagnetic activity, as distinct from
+the continuous daily series under `data/daily/`. Events are documented by date
+range, magnitude, and effect — not sampled at uniform cadence.
+
+## Files
+
+### `historical_storms.json`
+
+Major documented geomagnetic storms and solar events in the instrumental
+record (1859–present), plus well-characterized pre-satellite events whose
+impact is reconstructed from magnetogram archives. Each entry is hand-curated
+from peer-reviewed literature; see the `sources` array on every event.
+
+The file contains two objects at the root:
+
+- `_schema`, `_fields` — self-describing metadata, including a description of every field.
+- `events` — an array, chronologically ordered.
+
+Each event has `id`, `name`, `date_start`, `date_end`, `type`, `cycle`,
+`significance`, `effects`, and `sources`. Magnitude fields (`flare_class_peak`,
+`dst_nT_est`, `storm_scale`, `aurora_lat_deg`) are populated where historical
+evidence supports a specific value; `null` otherwise.
+
+### Pending
+
+Systematic catalogs (CDAW LASCO CME catalog, NASA DONKI, NOAA event lists)
+will land in separate files as they're ingested. The hand-curated
+`historical_storms.json` is a complement, not a replacement — it contains
+pre-satellite events that no automated catalog covers.
+
+## Provenance
+
+Every event references peer-reviewed work or official agency reports. If you
+find a disagreement between an entry here and the cited source, the source
+wins — open an issue. If a new peer-reviewed paper revises a historical
+estimate (e.g. the 1921 Railroad Storm's Dst reconstruction), we update the
+entry in the next minor version and note the revision in `CHANGELOG.md`.
+
+## Adding a new event
+
+Open a PR that includes:
+
+1. The new JSON entry, inserted in chronological order.
+2. At least one peer-reviewed reference or official agency report in `sources`.
+3. A `significance` line explaining why this event belongs in the catalog —
+   "it was a big storm" isn't sufficient. There must be something notable
+   about it: first of a kind, largest of a cycle, named scientific study,
+   real-world documented impact.
+
+Events that happen on the fringes of the catalog (moderate storms, routine
+X-class flares) belong in the systematic catalogs, not here.
