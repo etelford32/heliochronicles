@@ -1,6 +1,37 @@
 {
-  "generated_at": null,
+  "generated_at": "2026-04-21T02:12:29.065Z",
   "generator": "heliochronicles/scripts/build.mjs",
   "note": "This is a stub. Run `npm run build` to populate with real SHA-256 checksums, row counts, and source attribution per file.",
-  "files": {}
+  "files": {
+    "data/daily/daily_1800-1849.csv": {
+      "sha256": "9a0a159f40935c5dbb369db2fe69cee18f2218efb7dd9a4abea5f3a05ba5abae",
+      "row_count": 11688,
+      "source": "SILSO+GFZ",
+      "last_updated": "2026-04-21T02:12:28.962Z"
+    },
+    "data/daily/daily_1850-1899.csv": {
+      "sha256": "dd128bbc2b858a11720a3cd62c408c313e5d9d8f1eedd89c95c81fb72809c055",
+      "row_count": 18262,
+      "source": "SILSO+GFZ",
+      "last_updated": "2026-04-21T02:12:28.992Z"
+    },
+    "data/daily/daily_1900-1949.csv": {
+      "sha256": "6f9f57b919523ab060b0e7630a4c43e79cf0003b174b2f79cef462e1edb0c5e9",
+      "row_count": 18262,
+      "source": "SILSO+GFZ",
+      "last_updated": "2026-04-21T02:12:29.017Z"
+    },
+    "data/daily/daily_1950-1999.csv": {
+      "sha256": "1e74a1873de69b3226ffdc88c10c096df670881b58188f7c64a576711958d25b",
+      "row_count": 18262,
+      "source": "SILSO+GFZ",
+      "last_updated": "2026-04-21T02:12:29.048Z"
+    },
+    "data/daily/daily_2000-2049.csv": {
+      "sha256": "590bffa43a57c5d6f8aee896aeab17f87b357f5514cb679c05a98ce655494fa1",
+      "row_count": 9607,
+      "source": "SILSO+GFZ",
+      "last_updated": "2026-04-21T02:12:29.065Z"
+    }
+  }
 }
