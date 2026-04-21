@@ -1,6 +1,6 @@
 {
   "name": "heliochronicles",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Three centuries of space weather, in one repo.",
   "type": "module",
   "private": true,

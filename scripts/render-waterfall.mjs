@@ -6,15 +6,41 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..');
 const OUT_PATH = resolve(repoRoot, 'docs', 'charts', 'storm-waterfall.svg');
 
-const W = 1200;
-const H = 480;
-const M = { top: 100, right: 60, bottom: 90, left: 80 };
-const chartW = W - M.left - M.right;
-const chartH = H - M.top - M.bottom;
+// Storm severity waterfall. Same layout discipline as hero.svg:
+//   - Every y-coordinate is an explicit named constant.
+//   - No text labels inside the plot area.
+//   - Bars carry <title> hover tooltips; named events surface in a
+//     caption strip below the axis, not on the chart.
+//   - All gaps between elements ≥ 15 px.
 
+const W = 1200;
+const H = 520;
+
+// Margins (left reserves room for y-axis labels, right reserves room for severity callouts)
+const MARGIN_L = 96;
+const MARGIN_R = 140;
+const CHART_W = W - MARGIN_L - MARGIN_R;
+
+// ---- Explicit layout y-coordinates ----
+const TITLE_Y = 48;
+const SUBTITLE_Y = 74;
+const META_Y = 104;
+
+const ZERO_LINE_Y = 126;      // Dst = 0, top of bar area
+const CHART_BOTTOM = 398;     // bottom of bar area
+const CHART_H = CHART_BOTTOM - ZERO_LINE_Y;  // 272 px for Dst 0 to −1250
+
+const X_AXIS_LABELS_Y = 416;
+const LEGEND_Y = 446;
+const TOP5_CAPTION_Y = 478;
+const FOOTER_Y = 504;
+
+// ---- Data axes ----
 const X_MIN = 1855;
 const X_MAX = 2030;
-const Y_MAX = 1250; // |Dst| extent, to leave room above the deepest bar
+const DST_MAX_DEPTH = 1250;   // nT, absolute; bar heights scale against this
+
+const BAR_W = 8;
 
 const COLORS = {
   measured: '#c0392b',
@@ -22,10 +48,23 @@ const COLORS = {
   'estimated-hypothetical': '#2c7fb8'
 };
 
-const LABEL_COLORS = {
-  measured: '#c0392b',
-  reconstructed: '#555',
-  'estimated-hypothetical': '#1f4e79'
+// Compact display names for the deepest-5 caption strip. Keeps the line
+// from wrapping; full names remain in hover tooltips and the data file.
+const SHORT_NAMES = {
+  'carrington-1859': '1859 Carrington',
+  'feb-1872': '1872 February',
+  'may-1921': '1921 NY Railroad',
+  'march-1940': '1940 Easter',
+  'feb-1956-gle': '1956 GLE',
+  'aug-1972': '1972 August',
+  'march-1989': '1989 Quebec',
+  'bastille-2000': '2000 Bastille',
+  'halloween-2003': '2003 Halloween',
+  'sept-2005': '2005 September',
+  'july-2012-near-miss': '2012 near-miss',
+  'sept-2017': '2017 September',
+  'gannon-2024': '2024 Gannon',
+  'october-2024': '2024 October'
 };
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -38,175 +77,157 @@ function isoToFracYear(iso) {
   return yr + (d.getTime() - start) / (end - start);
 }
 
-const scaleX = (year) => M.left + ((year - X_MIN) / (X_MAX - X_MIN)) * chartW;
-// Y axis is inverted — y=M.top is the zero line (top of chart), bigger |Dst| goes down.
-const scaleY = (absDst) => M.top + (absDst / Y_MAX) * chartH;
+const scaleX = (year) => MARGIN_L + ((year - X_MIN) / (X_MAX - X_MIN)) * CHART_W;
+const scaleY = (absDst) => ZERO_LINE_Y + (absDst / DST_MAX_DEPTH) * CHART_H;
 
 async function main() {
   const storms = JSON.parse(
     await readFile(resolve(repoRoot, 'data/events/historical_storms.json'), 'utf8')
   ).events;
 
-  // Only storms with Dst values we can plot
   const plotted = storms
     .filter((s) => s.dst_nT !== null && s.dst_nT !== undefined)
-    .map((s) => ({ ...s, year: isoToFracYear(s.date_start), absDst: Math.abs(s.dst_nT) }));
+    .map((s) => ({ ...s, year: isoToFracYear(s.date_start), absDst: Math.abs(s.dst_nT) }))
+    .sort((a, b) => a.year - b.year);
 
-  // Top 5 by |Dst| for labels
-  const topByDst = [...plotted].sort((a, b) => b.absDst - a.absDst).slice(0, 5);
-  const topIds = new Set(topByDst.map((s) => s.id));
+  const top5 = [...plotted].sort((a, b) => b.absDst - a.absDst).slice(0, 5);
 
-  const lines = [];
-  lines.push(`<?xml version="1.0" encoding="UTF-8"?>`);
-  lines.push(
+  const countsBySource = plotted.reduce((acc, s) => {
+    acc[s.dst_source] = (acc[s.dst_source] || 0) + 1;
+    return acc;
+  }, {});
+
+  const out = [];
+  out.push(`<?xml version="1.0" encoding="UTF-8"?>`);
+  out.push(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">`
   );
-  lines.push(`<rect width="${W}" height="${H}" fill="#faf7f2"/>`);
+  out.push(`<rect width="${W}" height="${H}" fill="#faf7f2"/>`);
 
-  // Title
-  lines.push(
-    `<text x="${M.left}" y="50" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#1a1a1a">The storms we have records of</text>`
+  // ---- Title block ----
+  out.push(
+    `<text x="${MARGIN_L}" y="${TITLE_Y}" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#1a1a1a">The storms we have records of</text>`
   );
-  lines.push(
-    `<text x="${M.left}" y="74" font-size="13" fill="#555">Geomagnetic storms 1859 → today, ranked by depth of the Dst index. Lower = worse.</text>`
-  );
-
-  // Legend
-  const legendY = 90;
-  const legendEntries = [
-    { label: 'measured (1957+, Kyoto WDC)', color: COLORS.measured },
-    { label: 'reconstructed (pre-1957 magnetograms)', color: COLORS.reconstructed },
-    { label: 'estimated — hypothetical hit', color: COLORS['estimated-hypothetical'] }
-  ];
-  let lx = W - M.right;
-  for (let i = legendEntries.length - 1; i >= 0; i--) {
-    const e = legendEntries[i];
-    lines.push(
-      `<text x="${lx}" y="${legendY}" font-size="10" fill="#444" text-anchor="end">${esc(e.label)}</text>`
-    );
-    const textW = Math.ceil(e.label.length * 5.5);
-    lines.push(
-      `<rect x="${lx - textW - 18}" y="${legendY - 9}" width="12" height="12" fill="${e.color}" opacity="0.9"/>`
-    );
-    lx -= textW + 36;
-  }
-
-  // Zero line (top of chart, where bars start dropping from)
-  const zeroY = M.top;
-  lines.push(
-    `<line x1="${M.left}" y1="${zeroY}" x2="${M.left + chartW}" y2="${zeroY}" stroke="#333" stroke-width="1.2"/>`
-  );
-  lines.push(
-    `<text x="${M.left + chartW + 4}" y="${zeroY + 4}" font-size="10" fill="#555">Dst = 0</text>`
+  out.push(
+    `<text x="${MARGIN_L}" y="${SUBTITLE_Y}" font-size="13" fill="#555">Minimum Dst during each geomagnetic storm, 1859 → today. Bars hang down; lower = worse.</text>`
   );
 
-  // Horizontal guidelines and axis labels at -100, -200, -400, -600, -800, -1000, -1200
-  for (const v of [100, 200, 400, 600, 800, 1000, 1200]) {
+  // ---- Meta strip ----
+  const measuredN = countsBySource.measured || 0;
+  const reconstructedN = countsBySource.reconstructed || 0;
+  const hypotheticalN = countsBySource['estimated-hypothetical'] || 0;
+  out.push(
+    `<text x="${MARGIN_L}" y="${META_Y}" font-size="12" font-weight="600" fill="#333">${plotted.length} events · ${measuredN} measured · ${reconstructedN} reconstructed · ${hypotheticalN} hypothetical</text>`
+  );
+
+  // ---- Panel background ----
+  out.push(
+    `<rect x="${MARGIN_L}" y="${ZERO_LINE_Y}" width="${CHART_W}" height="${CHART_H}" fill="#fbf8f2"/>`
+  );
+
+  // ---- Y-axis gridlines + left labels ----
+  for (const v of [100, 300, 500, 800, 1200]) {
     const y = scaleY(v);
-    lines.push(
-      `<line x1="${M.left}" y1="${y.toFixed(1)}" x2="${M.left + chartW}" y2="${y.toFixed(1)}" stroke="#aaa" stroke-width="0.5" stroke-dasharray="2,3" opacity="0.5"/>`
+    out.push(
+      `<line x1="${MARGIN_L}" y1="${y.toFixed(1)}" x2="${MARGIN_L + CHART_W}" y2="${y.toFixed(1)}" stroke="#cfc4ae" stroke-width="0.5" stroke-dasharray="2,4"/>`
     );
-    lines.push(
-      `<text x="${M.left - 8}" y="${(y + 3).toFixed(1)}" font-size="10" fill="#555" text-anchor="end">−${v}</text>`
+    out.push(
+      `<text x="${MARGIN_L - 10}" y="${(y + 4).toFixed(1)}" font-size="10" text-anchor="end" fill="#666">−${v}</text>`
     );
   }
 
-  // Y-axis title
-  lines.push(
-    `<text x="${M.left - 52}" y="${(M.top + chartH / 2).toFixed(1)}" font-size="11" fill="#555" transform="rotate(-90 ${M.left - 52} ${(M.top + chartH / 2).toFixed(1)})" text-anchor="middle">Minimum Dst during event (nT)</text>`
+  // Y-axis title (rotated, far left)
+  out.push(
+    `<text x="30" y="${((ZERO_LINE_Y + CHART_BOTTOM) / 2).toFixed(1)}" font-size="11" fill="#666" transform="rotate(-90 30 ${((ZERO_LINE_Y + CHART_BOTTOM) / 2).toFixed(1)})" text-anchor="middle">Minimum Dst (nT)</text>`
   );
 
-  // Severity threshold annotations on the right
-  const severityMarks = [
-    { dst: 100, label: 'strong (G3)' },
-    { dst: 200, label: 'severe (G4)' },
-    { dst: 400, label: 'extreme (G5)' },
+  // ---- Severity threshold markers on right ----
+  const severity = [
+    { dst: 100, label: 'G3 strong' },
+    { dst: 200, label: 'G4 severe' },
+    { dst: 400, label: 'G5 extreme' },
     { dst: 800, label: 'Carrington-class' }
   ];
-  for (const m of severityMarks) {
+  for (const m of severity) {
     const y = scaleY(m.dst);
-    lines.push(
-      `<text x="${M.left + chartW + 4}" y="${(y + 3).toFixed(1)}" font-size="9" fill="#888" font-style="italic">${esc(m.label)}</text>`
+    out.push(
+      `<line x1="${MARGIN_L + CHART_W}" y1="${y.toFixed(1)}" x2="${MARGIN_L + CHART_W + 8}" y2="${y.toFixed(1)}" stroke="#888" stroke-width="0.8"/>`
+    );
+    out.push(
+      `<text x="${MARGIN_L + CHART_W + 12}" y="${(y + 3).toFixed(1)}" font-size="9" fill="#888" font-style="italic">${esc(m.label)}</text>`
     );
   }
 
-  // Storm bars — each a narrow rectangle pointing down from zero
-  const BAR_W = 10;
+  // ---- Zero line (heavy, labeled) ----
+  out.push(
+    `<line x1="${MARGIN_L}" y1="${ZERO_LINE_Y}" x2="${MARGIN_L + CHART_W}" y2="${ZERO_LINE_Y}" stroke="#222" stroke-width="1.2"/>`
+  );
+  out.push(
+    `<text x="${MARGIN_L + CHART_W + 12}" y="${(ZERO_LINE_Y + 4).toFixed(1)}" font-size="10" fill="#222" font-weight="600">Dst = 0</text>`
+  );
+
+  // ---- Storm bars ----
   for (const s of plotted) {
     const x = scaleX(s.year) - BAR_W / 2;
-    const y = zeroY;
-    const h = scaleY(s.absDst) - zeroY;
+    const y = ZERO_LINE_Y;
+    const h = scaleY(s.absDst) - ZERO_LINE_Y;
     const color = COLORS[s.dst_source] ?? '#aaa';
-    lines.push(
-      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" fill="${color}" opacity="0.92" rx="1.5"/>`
-    );
-    // Dst value at tip
-    const tipY = zeroY + h + 12;
-    const tipColor = LABEL_COLORS[s.dst_source] ?? '#555';
-    if (topIds.has(s.id)) {
-      lines.push(
-        `<text x="${(x + BAR_W / 2).toFixed(1)}" y="${tipY.toFixed(1)}" font-size="10" text-anchor="middle" fill="${tipColor}" font-weight="bold">−${s.absDst}</text>`
-      );
-    }
-  }
-
-  // Labels for top 5 — zig-zag above bars so they don't collide
-  const sortedForLabels = [...topByDst].sort((a, b) => a.year - b.year);
-  for (let i = 0; i < sortedForLabels.length; i++) {
-    const s = sortedForLabels[i];
-    const x = scaleX(s.year);
-    const yLabel = 54 + (i % 2) * 16;
-    const yTop = zeroY - 8;
-    lines.push(
-      `<line x1="${x.toFixed(1)}" y1="${yLabel + 8}" x2="${x.toFixed(1)}" y2="${yTop}" stroke="#999" stroke-width="0.5" stroke-dasharray="2,2"/>`
-    );
-    // Leader alignment: anchor at start if bar is on the left half, end if on the right
-    const anchor = x < W / 2 ? 'start' : 'end';
-    const offset = anchor === 'start' ? 4 : -4;
-    lines.push(
-      `<text x="${(x + offset).toFixed(1)}" y="${yLabel}" font-size="10" fill="${LABEL_COLORS[s.dst_source]}" font-weight="bold" text-anchor="${anchor}">${esc(s.name)}</text>`
+    out.push(
+      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" fill="${color}" opacity="0.92" rx="1.5"><title>${esc(s.name)} · ${s.date_start} · Dst ${s.dst_nT} nT (${s.dst_source})</title></rect>`
     );
   }
 
-  // Gannon annotation (biggest measured-era storm, deserves a shout even if not top-5 by magnitude)
-  {
-    const gannon = plotted.find((s) => s.id === 'gannon-2024');
-    if (gannon && !topIds.has(gannon.id)) {
-      const x = scaleX(gannon.year);
-      const yBarTip = zeroY + (scaleY(gannon.absDst) - zeroY);
-      lines.push(
-        `<text x="${x.toFixed(1)}" y="${(yBarTip + 26).toFixed(1)}" font-size="10" fill="${LABEL_COLORS[gannon.dst_source]}" text-anchor="end" font-weight="bold">Gannon 2024</text>`
-      );
-      lines.push(
-        `<text x="${x.toFixed(1)}" y="${(yBarTip + 38).toFixed(1)}" font-size="9" fill="#888" text-anchor="end">first G5 since Halloween 2003</text>`
-      );
-    }
-  }
-
-  // X-axis
-  const axisY = M.top + chartH;
-  lines.push(
-    `<line x1="${M.left}" y1="${axisY}" x2="${M.left + chartW}" y2="${axisY}" stroke="#333" stroke-width="0.8" opacity="0.4"/>`
+  // ---- X-axis ----
+  out.push(
+    `<line x1="${MARGIN_L}" y1="${CHART_BOTTOM}" x2="${MARGIN_L + CHART_W}" y2="${CHART_BOTTOM}" stroke="#333" stroke-width="0.8" opacity="0.4"/>`
   );
   for (const yr of [1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020]) {
     const x = scaleX(yr);
-    lines.push(
-      `<line x1="${x.toFixed(1)}" y1="${axisY}" x2="${x.toFixed(1)}" y2="${axisY + 5}" stroke="#333" stroke-width="0.8"/>`
+    out.push(
+      `<line x1="${x.toFixed(1)}" y1="${CHART_BOTTOM}" x2="${x.toFixed(1)}" y2="${(CHART_BOTTOM + 5).toFixed(1)}" stroke="#333" stroke-width="0.8"/>`
     );
-    lines.push(
-      `<text x="${x.toFixed(1)}" y="${axisY + 18}" font-size="10" text-anchor="middle" fill="#333">${yr}</text>`
+    out.push(
+      `<text x="${x.toFixed(1)}" y="${X_AXIS_LABELS_Y}" font-size="10" text-anchor="middle" fill="#444">${yr}</text>`
     );
   }
 
-  // Footer caption
-  lines.push(
-    `<text x="${M.left}" y="${H - 20}" font-size="11" fill="#666">14 events, hand-curated from peer-reviewed sources. Reconstructed pre-Dst values carry order-of-magnitude uncertainty; measured values (1957+) match Kyoto WDC within the ±5 nT integrity tolerance. See data/events/historical_storms.json for per-event sources.</text>`
+  // ---- Legend strip ----
+  const legendItems = [
+    { label: `measured (Kyoto WDC, ${measuredN})`, color: COLORS.measured },
+    { label: `reconstructed (pre-1957, ${reconstructedN})`, color: COLORS.reconstructed },
+    { label: `hypothetical (2012 miss, ${hypotheticalN})`, color: COLORS['estimated-hypothetical'] }
+  ];
+  let lx = MARGIN_L;
+  for (const e of legendItems) {
+    out.push(
+      `<rect x="${lx}" y="${LEGEND_Y - 9}" width="12" height="10" fill="${e.color}" opacity="0.92" rx="1.5"/>`
+    );
+    out.push(
+      `<text x="${lx + 18}" y="${LEGEND_Y}" font-size="10" fill="#555">${esc(e.label)}</text>`
+    );
+    lx += 18 + Math.ceil(e.label.length * 5.8) + 24;
+  }
+
+  // ---- Top-5 caption ----
+  const top5Parts = top5
+    .map((s) => `${SHORT_NAMES[s.id] ?? s.name} (−${s.absDst})`)
+    .join('  ·  ');
+  out.push(
+    `<text x="${MARGIN_L}" y="${TOP5_CAPTION_Y}" font-size="11" fill="#444" font-weight="600">Deepest 5:</text>`
+  );
+  out.push(
+    `<text x="${MARGIN_L + 62}" y="${TOP5_CAPTION_Y}" font-size="11" fill="#555">${esc(top5Parts)}</text>`
   );
 
-  lines.push(`</svg>`);
+  // ---- Footer caption ----
+  out.push(
+    `<text x="${MARGIN_L}" y="${FOOTER_Y}" font-size="10" fill="#888">Pre-1957 values reconstructed from magnetogram archives with order-of-magnitude uncertainty. Measured values (1957+) pulled from Kyoto WDC Dst via NASA OMNI. Hover a bar for event name and date; see data/events/historical_storms.json for sources.</text>`
+  );
+
+  out.push(`</svg>`);
 
   await mkdir(dirname(OUT_PATH), { recursive: true });
-  await writeFile(OUT_PATH, lines.join('\n') + '\n', 'utf8');
+  await writeFile(OUT_PATH, out.join('\n') + '\n', 'utf8');
   console.log(`wrote ${OUT_PATH}`);
 }
 
