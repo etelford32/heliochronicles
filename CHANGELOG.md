@@ -10,6 +10,26 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-04-21
+
+### Fixed — hero chart
+
+Redesigned `docs/charts/hero.svg` around a semantic boundary, not a visual one. Two panels, clearly separated by data quality:
+
+- **Top panel — "Historical evidence · chronicles and reconstructions":** 1000 BCE → 1755 CE. Aurora observation dots (filled high-confidence / hollow low-confidence) with hover tooltips, grand minima (Oort, Wolf, Spörer, Maunder) as shaded bands. No cycle bars — nothing numerical to show there.
+- **Divider:** horizontal rule with the inline label `1755 · NUMBERED SOLAR CYCLES BEGIN` so the transition is unmistakable.
+- **Bottom panel — "Instrumental era · 25 numbered cycles":** 1755 → 2030. Cycle bars on the histogram (SC19 highlighted), storm dots below x-axis, Dalton Minimum shaded.
+
+### Layout discipline
+
+Earlier iterations of the hero had overlapping text — the root cause was labeling inside the plot area without being able to preview the render. This version enforces:
+
+- **No text labels inside either plot area.** All labels live in the title block, panel meta strips, axes, or legend strips below the axes.
+- Every y-coordinate is an explicit named constant at the top of `scripts/render-hero.mjs`, so spacing is auditable at a glance (all gaps ≥ 15 px).
+- Aurora dots and storm dots carry `<title>` hover tooltips for SVG-aware viewers; no on-chart text.
+- Grand-minima names appear in the legend strip, not overlaid on the bands.
+- Cycle numbers dropped from the bars entirely.
+
 ## [0.10.0] - 2026-04-21
 
 Visual layer expansion. Hero redesigned to tell the long-view story; storm waterfall added as an emotional hook near the bottom of the README.
@@ -241,7 +261,8 @@ Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.1
 [0.10.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.0
 [0.9.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.9.0
 [0.8.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.8.0

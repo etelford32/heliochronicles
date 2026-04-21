@@ -6,26 +6,54 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..');
 const OUT_PATH = resolve(repoRoot, 'docs', 'charts', 'hero.svg');
 
-// Overall canvas
-const W = 1200;
-const H = 620;
+// ---- Layout constants (explicit y-coordinates for every element) ----
+// Strict rule: no text label inside either plot area. All labels live in
+// the title block, panel meta-strips, axes, or legend strips. Every
+// element's y-coordinate is declared here so spacing is auditable.
 
-// Layout regions (y-coordinates)
+const W = 1200;
+const H = 640;
+
+// Horizontal margins (shared between panels)
+const MARGIN_L = 80;
+const MARGIN_R = 60;
+const CHART_W = W - MARGIN_L - MARGIN_R;
+
+// Title block
 const TITLE_Y = 52;
 const SUBTITLE_Y = 78;
-const PANEL_A_TOP = 108;
-const PANEL_A_BOTTOM = 320;
-const PANEL_GAP = 16;
-const PANEL_B_TOP = PANEL_A_BOTTOM + PANEL_GAP;
-const PANEL_B_BOTTOM = 576;
-const FOOTER_Y = 606;
 
-// Horizontal margins (shared)
-const LEFT = 70;
-const RIGHT = 50;
-const CHART_W = W - LEFT - RIGHT;
+// TOP panel — "Historical evidence", 660 BCE → 1755 CE
+const P1_META_Y = 118;        // panel name + range (baseline)
+const P1_CHART_TOP = 140;
+const P1_CHART_BOTTOM = 250;
+const P1_AXIS_LABELS_Y = 268;
+const P1_LEGEND_Y = 288;
 
-// --------------- Shared helpers ---------------
+// Divider
+const DIV_LINE_Y = 310;
+const DIV_LABEL_Y = 324;
+
+// BOTTOM panel — "Instrumental era", 1755 → 2030
+const P2_META_Y = 352;
+const P2_CHART_TOP = 370;
+const P2_CHART_BOTTOM = 548;
+const P2_AXIS_LABELS_Y = 566;
+const P2_STORM_ROW_Y = 586;
+const P2_LEGEND_Y = 608;
+
+// X-axis ranges
+const P1_X_MIN = -1000;
+const P1_X_MAX = 1755;
+const P2_X_MIN = 1755;
+const P2_X_MAX = 2030;
+
+// Y-axis for bottom panel (peak SSN)
+const Y_MAX = 310;
+
+const p1ScaleX = (year) => MARGIN_L + ((year - P1_X_MIN) / (P1_X_MAX - P1_X_MIN)) * CHART_W;
+const p2ScaleX = (year) => MARGIN_L + ((year - P2_X_MIN) / (P2_X_MAX - P2_X_MIN)) * CHART_W;
+const p2ScaleY = (ssn) => P2_CHART_TOP + (P2_CHART_BOTTOM - P2_CHART_TOP) - (ssn / Y_MAX) * (P2_CHART_BOTTOM - P2_CHART_TOP);
 
 function ymToFracYear(ym) {
   if (!ym) return null;
@@ -43,258 +71,6 @@ function isoToFracYear(iso) {
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-// --------------- Panel A: 2,500-year long-view ---------------
-// X-axis: 1000 BCE (-1000) → 2030 CE. Rows within the panel:
-//   auroraY   — aurora observation ticks
-//   minimaY   — grand-minima shaded bands (span full panel vertically)
-//   cyclesY   — numbered-cycles era strip
-//   stormY    — storm event ticks
-function renderPanelA(cycles, minima, storms, auroras) {
-  const X_MIN = -1000;
-  const X_MAX = 2030;
-  const scaleX = (year) => LEFT + ((year - X_MIN) / (X_MAX - X_MIN)) * CHART_W;
-
-  const auroraY = PANEL_A_TOP + 32;
-  const minimaTop = PANEL_A_TOP + 52;
-  const minimaBottom = PANEL_A_BOTTOM - 42;
-  const cyclesTop = minimaTop + 16;
-  const cyclesBottom = minimaBottom - 16;
-  const stormY = PANEL_A_BOTTOM - 24;
-
-  const out = [];
-
-  // Panel title
-  out.push(
-    `<text x="${LEFT}" y="${PANEL_A_TOP + 12}" font-size="13" font-weight="600" fill="#222">2,500 years of solar activity</text>`
-  );
-  out.push(
-    `<text x="${W - RIGHT}" y="${PANEL_A_TOP + 12}" font-size="11" fill="#888" text-anchor="end">1000 BCE → today</text>`
-  );
-
-  // Panel background
-  out.push(
-    `<rect x="${LEFT}" y="${minimaTop}" width="${CHART_W}" height="${minimaBottom - minimaTop}" fill="#f3ede2" stroke="#e8ddc8" stroke-width="0.5"/>`
-  );
-
-  // Grand minima shaded bands (behind the cycles strip)
-  for (const m of minima) {
-    if (m.end_year < X_MIN || m.start_year > X_MAX) continue;
-    const x1 = scaleX(Math.max(m.start_year, X_MIN));
-    const x2 = scaleX(Math.min(m.end_year, X_MAX));
-    out.push(
-      `<rect x="${x1.toFixed(1)}" y="${minimaTop}" width="${(x2 - x1).toFixed(1)}" height="${minimaBottom - minimaTop}" fill="#2c3e50" opacity="0.12"/>`
-    );
-    // Label the named minima
-    const labelX = (x1 + x2) / 2;
-    out.push(
-      `<text x="${labelX.toFixed(1)}" y="${minimaBottom - 4}" font-size="9" text-anchor="middle" fill="#555" font-style="italic">${esc(m.name.split(' ')[0])}</text>`
-    );
-  }
-
-  // Numbered-cycles era strip (1755+ colored gradient band)
-  const cycleStartX = scaleX(1755);
-  const cycleEndX = scaleX(2030);
-  out.push(
-    `<rect x="${cycleStartX.toFixed(1)}" y="${cyclesTop}" width="${(cycleEndX - cycleStartX).toFixed(1)}" height="${cyclesBottom - cyclesTop}" fill="url(#solarBand)" opacity="0.85"/>`
-  );
-  // Individual cycle dividers as thin lines (one per min)
-  for (const c of cycles) {
-    const x = scaleX(ymToFracYear(c.min_start));
-    if (x < cycleStartX || x > cycleEndX) continue;
-    out.push(
-      `<line x1="${x.toFixed(1)}" y1="${cyclesTop}" x2="${x.toFixed(1)}" y2="${cyclesBottom}" stroke="#a84700" stroke-width="0.5" opacity="0.4"/>`
-    );
-  }
-  out.push(
-    `<text x="${((cycleStartX + cycleEndX) / 2).toFixed(1)}" y="${((cyclesTop + cyclesBottom) / 2 + 3).toFixed(1)}" font-size="9" text-anchor="middle" fill="#4a1d00" font-weight="600">${cycles.length} numbered cycles</text>`
-  );
-
-  // Aurora observations as tick marks above the minima band
-  for (const a of auroras) {
-    if (a.year < X_MIN || a.year > X_MAX) continue;
-    const x = scaleX(a.year);
-    const filled = a.identification_confidence === 'high';
-    const r = filled ? 3 : 2.5;
-    out.push(
-      `<circle cx="${x.toFixed(1)}" cy="${auroraY}" r="${r}" fill="${filled ? '#1a5490' : 'none'}" stroke="#1a5490" stroke-width="1"/>`
-    );
-  }
-  out.push(
-    `<text x="${LEFT - 6}" y="${auroraY + 3}" font-size="9" fill="#1a5490" text-anchor="end" font-weight="600">Aurora records</text>`
-  );
-
-  // Key aurora labels
-  const keyAuroras = [
-    { id: 'assyrian-660bce', label: 'Assyrian tablets' },
-    { id: 'aristotle-467bce', label: 'Aristotle' },
-    { id: 'anglosaxon-776', label: '776 CE' },
-    { id: 'halley-1716', label: 'Halley 1716' },
-    { id: 'hayakawa-1770', label: '1770 extreme' }
-  ];
-  for (let i = 0; i < keyAuroras.length; i++) {
-    const a = auroras.find((x) => x.id === keyAuroras[i].id);
-    if (!a) continue;
-    const x = scaleX(a.year);
-    const yOffset = i % 2 === 0 ? -10 : -22;
-    out.push(
-      `<text x="${x.toFixed(1)}" y="${auroraY + yOffset}" font-size="9" text-anchor="middle" fill="#1a5490">${esc(keyAuroras[i].label)}</text>`
-    );
-  }
-
-  // Storm markers along a bottom row
-  for (const s of storms) {
-    const year = isoToFracYear(s.date_start);
-    if (year < X_MIN || year > X_MAX) continue;
-    const x = scaleX(year);
-    const big = s.type === 'carrington-class' || (s.dst_nT !== null && s.dst_nT <= -800);
-    out.push(
-      `<circle cx="${x.toFixed(1)}" cy="${stormY}" r="${big ? 4 : 3}" fill="${big ? '#c0392b' : '#888'}" opacity="0.9"/>`
-    );
-  }
-  out.push(
-    `<text x="${LEFT - 6}" y="${stormY + 3}" font-size="9" fill="#c0392b" text-anchor="end" font-weight="600">Major storms</text>`
-  );
-
-  // Axis ticks at round years
-  const yearTicks = [-1000, -500, 0, 500, 1000, 1500, 2000];
-  for (const y of yearTicks) {
-    const x = scaleX(y);
-    out.push(
-      `<line x1="${x.toFixed(1)}" y1="${PANEL_A_BOTTOM - 8}" x2="${x.toFixed(1)}" y2="${PANEL_A_BOTTOM - 4}" stroke="#888" stroke-width="0.5"/>`
-    );
-    const label = y < 0 ? `${-y} BCE` : `${y} CE`;
-    out.push(
-      `<text x="${x.toFixed(1)}" y="${PANEL_A_BOTTOM + 4}" font-size="9" text-anchor="middle" fill="#777">${label}</text>`
-    );
-  }
-
-  return out.join('\n');
-}
-
-// --------------- Panel B: 25 numbered cycles, 1700-2030 ---------------
-function renderPanelB(cycles) {
-  const X_MIN = 1700;
-  const X_MAX = 2030;
-  const Y_MAX = 300;
-  const chartTop = PANEL_B_TOP + 28;
-  const chartBottom = PANEL_B_BOTTOM - 30;
-  const chartH = chartBottom - chartTop;
-
-  const scaleX = (year) => LEFT + ((year - X_MIN) / (X_MAX - X_MIN)) * CHART_W;
-  const scaleY = (ssn) => chartTop + chartH - (ssn / Y_MAX) * chartH;
-
-  const out = [];
-
-  // Panel title
-  out.push(
-    `<text x="${LEFT}" y="${PANEL_B_TOP + 12}" font-size="13" font-weight="600" fill="#222">The 25 numbered cycles</text>`
-  );
-  out.push(
-    `<text x="${W - RIGHT}" y="${PANEL_B_TOP + 12}" font-size="11" fill="#888" text-anchor="end">Peak smoothed SSN at each cycle maximum</text>`
-  );
-
-  // Panel background + dashed horizontal guidelines
-  out.push(
-    `<rect x="${LEFT}" y="${chartTop}" width="${CHART_W}" height="${chartH}" fill="#fbf8f2" stroke="#e8ddc8" stroke-width="0.5"/>`
-  );
-  for (const v of [100, 200, 300]) {
-    const y = scaleY(v);
-    out.push(
-      `<line x1="${LEFT}" y1="${y.toFixed(1)}" x2="${LEFT + CHART_W}" y2="${y.toFixed(1)}" stroke="#aaa" stroke-width="0.5" stroke-dasharray="2,3" opacity="0.5"/>`
-    );
-    out.push(
-      `<text x="${LEFT - 8}" y="${(y + 3).toFixed(1)}" font-size="10" fill="#666" text-anchor="end">${v}</text>`
-    );
-  }
-  // Long-run mean line
-  const meanSsn = cycles.filter((c) => !c.provisional).reduce((a, c) => a + c.peak_ssn, 0) / cycles.filter((c) => !c.provisional).length;
-  const meanY = scaleY(meanSsn);
-  out.push(
-    `<line x1="${LEFT}" y1="${meanY.toFixed(1)}" x2="${LEFT + CHART_W}" y2="${meanY.toFixed(1)}" stroke="#2c3e50" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.45"/>`
-  );
-  out.push(
-    `<text x="${LEFT + CHART_W + 4}" y="${(meanY + 3).toFixed(1)}" font-size="9" fill="#2c3e50" opacity="0.7">mean ${meanSsn.toFixed(0)}</text>`
-  );
-
-  // Dalton Minimum shading (within this panel's range)
-  {
-    const x1 = scaleX(1790);
-    const x2 = scaleX(1830);
-    out.push(
-      `<rect x="${x1.toFixed(1)}" y="${chartTop}" width="${(x2 - x1).toFixed(1)}" height="${chartH}" fill="#2c3e50" opacity="0.07"/>`
-    );
-    out.push(
-      `<text x="${((x1 + x2) / 2).toFixed(1)}" y="${chartTop + 12}" font-size="9" text-anchor="middle" fill="#555" font-style="italic">Dalton</text>`
-    );
-  }
-
-  // Cycle triangles
-  const biggest = cycles.reduce((a, b) => (a.peak_ssn > b.peak_ssn ? a : b));
-  for (const c of cycles) {
-    const start = ymToFracYear(c.min_start);
-    const end = c.min_end ? ymToFracYear(c.min_end) : ymToFracYear(c.max) + 3;
-    const mx = ymToFracYear(c.max);
-    const x1 = scaleX(start);
-    const x2 = scaleX(end);
-    const xm = scaleX(mx);
-    const yPeak = scaleY(c.peak_ssn);
-    const yBase = chartBottom;
-    const isPeak = c.cycle === biggest.cycle;
-    const fill = isPeak ? 'url(#solarPeak)' : 'url(#solarBand)';
-    const opacity = c.provisional ? 0.6 : 0.88;
-    out.push(
-      `<polygon points="${x1.toFixed(1)},${yBase.toFixed(1)} ${xm.toFixed(1)},${yPeak.toFixed(1)} ${x2.toFixed(1)},${yBase.toFixed(1)}" fill="${fill}" opacity="${opacity}" stroke="#faf7f2" stroke-width="0.8"/>`
-    );
-    // Cycle number labels (only for larger cycles to avoid crowding)
-    if (c.peak_ssn > 120 || c.cycle >= 21) {
-      out.push(
-        `<text x="${xm.toFixed(1)}" y="${(yPeak - 4).toFixed(1)}" font-size="9" text-anchor="middle" fill="${isPeak ? '#c0392b' : '#555'}" font-weight="${isPeak ? 'bold' : 'normal'}">${c.cycle}</text>`
-      );
-    }
-  }
-
-  // SC19 callout arrow
-  {
-    const sc19 = cycles.find((c) => c.cycle === 19);
-    const xMax = scaleX(ymToFracYear(sc19.max));
-    const yTop = scaleY(sc19.peak_ssn);
-    const calloutX = xMax + 80;
-    const calloutY = yTop + 8;
-    out.push(
-      `<line x1="${(xMax + 3).toFixed(1)}" y1="${yTop.toFixed(1)}" x2="${calloutX.toFixed(1)}" y2="${(calloutY - 3).toFixed(1)}" stroke="#c0392b" stroke-width="1" stroke-dasharray="2,2" opacity="0.8"/>`
-    );
-    out.push(
-      `<text x="${calloutX.toFixed(1)}" y="${calloutY.toFixed(1)}" font-size="10" fill="#c0392b" font-weight="bold">SC19 · 1957</text>`
-    );
-    out.push(
-      `<text x="${calloutX.toFixed(1)}" y="${(calloutY + 12).toFixed(1)}" font-size="9" fill="#c0392b">peak SSN ${sc19.peak_ssn.toFixed(0)}, biggest on record</text>`
-    );
-  }
-
-  // X-axis
-  out.push(
-    `<line x1="${LEFT}" y1="${chartBottom}" x2="${LEFT + CHART_W}" y2="${chartBottom}" stroke="#333" stroke-width="1"/>`
-  );
-  for (const y of [1700, 1750, 1800, 1850, 1900, 1950, 2000]) {
-    const x = scaleX(y);
-    out.push(
-      `<line x1="${x.toFixed(1)}" y1="${chartBottom}" x2="${x.toFixed(1)}" y2="${(chartBottom + 5).toFixed(1)}" stroke="#333" stroke-width="0.8"/>`
-    );
-    out.push(
-      `<text x="${x.toFixed(1)}" y="${(chartBottom + 18).toFixed(1)}" font-size="10" text-anchor="middle" fill="#333">${y}</text>`
-    );
-  }
-
-  // Y-axis label
-  out.push(
-    `<text x="${LEFT - 42}" y="${((chartTop + chartBottom) / 2).toFixed(1)}" font-size="10" fill="#555" transform="rotate(-90 ${LEFT - 42} ${((chartTop + chartBottom) / 2).toFixed(1)})" text-anchor="middle">Peak SSN (smoothed V2.0)</text>`
-  );
-
-  return out.join('\n');
-}
-
-// --------------- Main ---------------
-
 async function main() {
   const cycles = JSON.parse(
     await readFile(resolve(repoRoot, 'data/cycles/solar_cycles.json'), 'utf8')
@@ -309,44 +85,211 @@ async function main() {
     await readFile(resolve(repoRoot, 'data/events/aurora_observations.json'), 'utf8')
   ).observations;
 
-  const lines = [];
-  lines.push(`<?xml version="1.0" encoding="UTF-8"?>`);
-  lines.push(
+  const out = [];
+  out.push(`<?xml version="1.0" encoding="UTF-8"?>`);
+  out.push(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">`
   );
-  lines.push(`<defs>`);
-  lines.push(
-    `<linearGradient id="solarBand" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5b942"/><stop offset="100%" stop-color="#d66200"/></linearGradient>`
+  out.push(`<defs>`);
+  out.push(
+    `<linearGradient id="bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5b942"/><stop offset="100%" stop-color="#d66200"/></linearGradient>`
   );
-  lines.push(
-    `<linearGradient id="solarPeak" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#c0392b"/></linearGradient>`
+  out.push(
+    `<linearGradient id="barPeak" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#b02a1f"/></linearGradient>`
   );
-  lines.push(`</defs>`);
+  out.push(`</defs>`);
+  out.push(`<rect width="${W}" height="${H}" fill="#faf7f2"/>`);
 
-  // Background
-  lines.push(`<rect width="${W}" height="${H}" fill="#faf7f2"/>`);
-
-  // Title block
-  lines.push(
-    `<text x="${LEFT}" y="${TITLE_Y}" font-family="Georgia, serif" font-size="34" font-weight="bold" fill="#1a1a1a">HelioChronicles</text>`
+  // ---- Title block ----
+  out.push(
+    `<text x="${MARGIN_L}" y="${TITLE_Y}" font-family="Georgia, serif" font-size="30" font-weight="bold" fill="#1a1a1a">HelioChronicles</text>`
   );
-  lines.push(
-    `<text x="${LEFT}" y="${SUBTITLE_Y}" font-size="14" fill="#555">The known history of the Sun — from Assyrian cuneiform aurora records (660 BCE) to today's ${cycles.length}th numbered cycle</text>`
+  out.push(
+    `<text x="${MARGIN_L}" y="${SUBTITLE_Y}" font-size="13" fill="#555">The known history of the Sun — from chronicle aurora to measured cycles</text>`
   );
 
-  // Two panels
-  lines.push(renderPanelA(cycles, minima, storms, auroras));
-  lines.push(renderPanelB(cycles));
+  // =========================================================================
+  // TOP PANEL — Historical evidence, 660 BCE → 1755 CE
+  // =========================================================================
 
-  // Footer caption
-  lines.push(
-    `<text x="${LEFT}" y="${FOOTER_Y}" font-size="11" fill="#666">Sources: SIDC-SILSO (cycles), peer-reviewed paleoaurora literature (Stephenson 2004, Hayakawa 2017), curated grand minima and historical storms — see data/ and docs/ANALYSIS.md for the full record.</text>`
+  // Panel meta strip (name left, range right)
+  out.push(
+    `<text x="${MARGIN_L}" y="${P1_META_Y}" font-size="12" font-weight="600" fill="#333">Historical evidence · chronicles and reconstructions</text>`
+  );
+  out.push(
+    `<text x="${W - MARGIN_R}" y="${P1_META_Y}" font-size="11" fill="#888" text-anchor="end">1000 BCE → 1755 CE</text>`
   );
 
-  lines.push(`</svg>`);
+  // Panel background (subtle box)
+  out.push(
+    `<rect x="${MARGIN_L}" y="${P1_CHART_TOP}" width="${CHART_W}" height="${P1_CHART_BOTTOM - P1_CHART_TOP}" fill="#f3ede2"/>`
+  );
+
+  // Grand minima shaded bands (pre-1755 portion only)
+  const p1Minima = minima.filter((m) => m.start_year < P1_X_MAX && m.end_year > P1_X_MIN);
+  for (const m of p1Minima) {
+    const x1 = p1ScaleX(Math.max(m.start_year, P1_X_MIN));
+    const x2 = p1ScaleX(Math.min(m.end_year, P1_X_MAX));
+    out.push(
+      `<rect x="${x1.toFixed(1)}" y="${P1_CHART_TOP}" width="${(x2 - x1).toFixed(1)}" height="${P1_CHART_BOTTOM - P1_CHART_TOP}" fill="#2c3e50" opacity="0.14"><title>${esc(m.name)} (${m.start_year}–${m.end_year})</title></rect>`
+    );
+  }
+
+  // Aurora observation dots along a single row near top of panel
+  const auroraRowY = P1_CHART_TOP + 24;
+  const auroraInPanel = auroras.filter((a) => a.year >= P1_X_MIN && a.year <= P1_X_MAX);
+  for (const a of auroraInPanel) {
+    const x = p1ScaleX(a.year);
+    const filled = a.identification_confidence === 'high';
+    out.push(
+      `<circle cx="${x.toFixed(1)}" cy="${auroraRowY}" r="${filled ? 3.2 : 2.6}" fill="${filled ? '#1a5490' : 'none'}" stroke="#1a5490" stroke-width="${filled ? 0 : 1}"><title>${esc(a.location)} · ${a.year < 0 ? -a.year + ' BCE' : a.year + ' CE'}</title></circle>`
+    );
+  }
+
+  // TOP panel x-axis
+  out.push(
+    `<line x1="${MARGIN_L}" y1="${P1_CHART_BOTTOM}" x2="${MARGIN_L + CHART_W}" y2="${P1_CHART_BOTTOM}" stroke="#333" stroke-width="1"/>`
+  );
+  for (const yr of [-1000, -500, 0, 500, 1000, 1500]) {
+    const x = p1ScaleX(yr);
+    out.push(
+      `<line x1="${x.toFixed(1)}" y1="${P1_CHART_BOTTOM}" x2="${x.toFixed(1)}" y2="${(P1_CHART_BOTTOM + 5).toFixed(1)}" stroke="#333" stroke-width="0.8"/>`
+    );
+    const label = yr < 0 ? `${-yr} BCE` : yr === 0 ? '1 CE' : `${yr} CE`;
+    out.push(
+      `<text x="${x.toFixed(1)}" y="${P1_AXIS_LABELS_Y}" font-size="10" text-anchor="middle" fill="#444">${label}</text>`
+    );
+  }
+
+  // TOP panel legend strip (below axis labels)
+  out.push(
+    `<circle cx="${MARGIN_L + 4}" cy="${P1_LEGEND_Y - 3}" r="3.2" fill="#1a5490"/>`
+  );
+  out.push(
+    `<text x="${MARGIN_L + 14}" y="${P1_LEGEND_Y}" font-size="10" fill="#555">${auroraInPanel.length} aurora observations</text>`
+  );
+  out.push(
+    `<rect x="${MARGIN_L + 200}" y="${P1_LEGEND_Y - 9}" width="12" height="10" fill="#2c3e50" opacity="0.14"/>`
+  );
+  out.push(
+    `<text x="${MARGIN_L + 218}" y="${P1_LEGEND_Y}" font-size="10" fill="#555">grand minima (Oort · Wolf · Spörer · Maunder)</text>`
+  );
+
+  // =========================================================================
+  // DIVIDER — visual break between historical and instrumental
+  // =========================================================================
+
+  out.push(
+    `<line x1="${MARGIN_L}" y1="${DIV_LINE_Y}" x2="${MARGIN_L + CHART_W}" y2="${DIV_LINE_Y}" stroke="#c9b89b" stroke-width="0.8"/>`
+  );
+  out.push(
+    `<rect x="${(W / 2 - 130).toFixed(1)}" y="${(DIV_LABEL_Y - 12).toFixed(1)}" width="260" height="16" fill="#faf7f2"/>`
+  );
+  out.push(
+    `<text x="${W / 2}" y="${DIV_LABEL_Y}" font-size="11" text-anchor="middle" fill="#7a5c2e" letter-spacing="0.5">1755 · NUMBERED SOLAR CYCLES BEGIN</text>`
+  );
+
+  // =========================================================================
+  // BOTTOM PANEL — Instrumental era, 1755 → 2030
+  // =========================================================================
+
+  // Panel meta strip
+  out.push(
+    `<text x="${MARGIN_L}" y="${P2_META_Y}" font-size="12" font-weight="600" fill="#333">Instrumental era · 25 numbered cycles</text>`
+  );
+  out.push(
+    `<text x="${W - MARGIN_R}" y="${P2_META_Y}" font-size="11" fill="#888" text-anchor="end">1755 → today · peak SSN (smoothed V2.0)</text>`
+  );
+
+  // Panel background
+  out.push(
+    `<rect x="${MARGIN_L}" y="${P2_CHART_TOP}" width="${CHART_W}" height="${P2_CHART_BOTTOM - P2_CHART_TOP}" fill="#fbf8f2"/>`
+  );
+
+  // Y-axis gridlines + labels (labels outside plot area on left)
+  for (const v of [100, 200, 300]) {
+    const y = p2ScaleY(v);
+    out.push(
+      `<line x1="${MARGIN_L}" y1="${y.toFixed(1)}" x2="${MARGIN_L + CHART_W}" y2="${y.toFixed(1)}" stroke="#cfc4ae" stroke-width="0.5" stroke-dasharray="2,4"/>`
+    );
+    out.push(
+      `<text x="${MARGIN_L - 10}" y="${(y + 4).toFixed(1)}" font-size="10" text-anchor="end" fill="#666">${v}</text>`
+    );
+  }
+
+  // Dalton minimum subtle shading within bottom panel range
+  {
+    const dalton = minima.find((m) => m.id === 'dalton');
+    const x1 = p2ScaleX(dalton.start_year);
+    const x2 = p2ScaleX(dalton.end_year);
+    out.push(
+      `<rect x="${x1.toFixed(1)}" y="${P2_CHART_TOP}" width="${(x2 - x1).toFixed(1)}" height="${P2_CHART_BOTTOM - P2_CHART_TOP}" fill="#2c3e50" opacity="0.06"><title>Dalton Minimum (1790–1830)</title></rect>`
+    );
+  }
+
+  // Cycle bars
+  const biggest = cycles.reduce((a, b) => (a.peak_ssn > b.peak_ssn ? a : b));
+  for (const c of cycles) {
+    const start = ymToFracYear(c.min_start);
+    const end = c.min_end ? ymToFracYear(c.min_end) : ymToFracYear(c.max) + 3;
+    const x1 = p2ScaleX(start);
+    const x2 = p2ScaleX(end);
+    const y = p2ScaleY(c.peak_ssn);
+    const h = P2_CHART_BOTTOM - y;
+    const isPeak = c.cycle === biggest.cycle;
+    const fill = isPeak ? 'url(#barPeak)' : 'url(#bar)';
+    const opacity = c.provisional ? 0.55 : 0.9;
+    out.push(
+      `<rect x="${(x1 + 0.5).toFixed(1)}" y="${y.toFixed(1)}" width="${(x2 - x1 - 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" opacity="${opacity}"><title>SC${c.cycle} (${c.min_start}–${c.min_end ?? 'ongoing'}) · peak SSN ${c.peak_ssn.toFixed(0)}</title></rect>`
+    );
+  }
+
+  // Bottom panel x-axis
+  out.push(
+    `<line x1="${MARGIN_L}" y1="${P2_CHART_BOTTOM}" x2="${MARGIN_L + CHART_W}" y2="${P2_CHART_BOTTOM}" stroke="#333" stroke-width="1"/>`
+  );
+  for (const yr of [1800, 1850, 1900, 1950, 2000]) {
+    const x = p2ScaleX(yr);
+    out.push(
+      `<line x1="${x.toFixed(1)}" y1="${P2_CHART_BOTTOM}" x2="${x.toFixed(1)}" y2="${(P2_CHART_BOTTOM + 5).toFixed(1)}" stroke="#333" stroke-width="0.8"/>`
+    );
+    out.push(
+      `<text x="${x.toFixed(1)}" y="${P2_AXIS_LABELS_Y}" font-size="10" text-anchor="middle" fill="#444">${yr}</text>`
+    );
+  }
+
+  // Storm dots row below axis labels
+  const stormsInPanel = storms.filter((s) => {
+    const yr = isoToFracYear(s.date_start);
+    return yr >= P2_X_MIN && yr <= P2_X_MAX;
+  });
+  for (const s of stormsInPanel) {
+    const yr = isoToFracYear(s.date_start);
+    const x = p2ScaleX(yr);
+    const big = s.type === 'carrington-class' || (s.dst_nT !== null && s.dst_nT <= -800);
+    out.push(
+      `<circle cx="${x.toFixed(1)}" cy="${P2_STORM_ROW_Y}" r="${big ? 4 : 3}" fill="${big ? '#b02a1f' : '#888'}" opacity="0.9"><title>${esc(s.name)} (${s.date_start})</title></circle>`
+    );
+  }
+
+  // Bottom panel legend strip
+  out.push(
+    `<rect x="${MARGIN_L + 4}" y="${P2_LEGEND_Y - 9}" width="12" height="10" fill="url(#bar)"/>`
+  );
+  out.push(
+    `<text x="${MARGIN_L + 20}" y="${P2_LEGEND_Y}" font-size="10" fill="#555">${cycles.length} solar cycles (SC${biggest.cycle} highlighted: peak SSN ${biggest.peak_ssn.toFixed(0)}, ${biggest.max.slice(0, 4)})</text>`
+  );
+  out.push(
+    `<circle cx="${MARGIN_L + 430}" cy="${P2_LEGEND_Y - 3}" r="3.5" fill="#b02a1f"/>`
+  );
+  out.push(
+    `<text x="${MARGIN_L + 440}" y="${P2_LEGEND_Y}" font-size="10" fill="#555">${stormsInPanel.length} major storms (1859 → 2024)</text>`
+  );
+
+  out.push(`</svg>`);
 
   await mkdir(dirname(OUT_PATH), { recursive: true });
-  await writeFile(OUT_PATH, lines.join('\n') + '\n', 'utf8');
+  await writeFile(OUT_PATH, out.join('\n') + '\n', 'utf8');
   console.log(`wrote ${OUT_PATH}`);
 }
 
