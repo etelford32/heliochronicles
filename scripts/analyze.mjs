@@ -233,7 +233,63 @@ function groupStormsByCycle(events) {
   return [...byCycle.entries()].sort((a, b) => a[0] - b[0]);
 }
 
-function renderReport({ cycles, cyc, minima, storms, daily, schemaColumns }) {
+function formatHistoricalYear(y) {
+  return y < 0 ? `${-y} BCE` : `${y} CE`;
+}
+
+function renderAuroraTable(observations) {
+  const rows = observations.map((o) => {
+    const year = formatHistoricalYear(o.year);
+    const month = o.month ? String(o.month).padStart(2, '0') : '—';
+    const day = o.day ? String(o.day).padStart(2, '0') : '—';
+    const when = o.day && o.month ? `${year} ${month}-${day}` : (o.month ? `${year} ${month}` : year);
+    return `| ${when} | ${o.location} | ${o.identification_confidence} | ${o.latitude_indicator} |`;
+  });
+  return [
+    '| When | Where | Confidence | Latitude |',
+    '|:-----|:------|:----------:|:--------:|',
+    ...rows
+  ].join('\n');
+}
+
+function auroraAnalysis(observations) {
+  if (!observations || observations.length === 0) return null;
+  const sorted = [...observations].sort((a, b) => a.year - b.year);
+  const earliestAny = sorted[0];
+  const earliestAccepted = sorted.find((o) => o.identification_confidence === 'high') ?? earliestAny;
+  const earliestContested = earliestAny !== earliestAccepted ? earliestAny : null;
+  const latest = sorted[sorted.length - 1];
+
+  const byEpoch = {
+    bce: sorted.filter((o) => o.year < 0),
+    ce_ancient: sorted.filter((o) => o.year >= 0 && o.year < 500),
+    medieval: sorted.filter((o) => o.year >= 500 && o.year < 1500),
+    earlyModern: sorted.filter((o) => o.year >= 1500 && o.year < 1755),
+    numbered: sorted.filter((o) => o.year >= 1755)
+  };
+
+  const byConfidence = { high: 0, medium: 0, low: 0 };
+  for (const o of sorted) byConfidence[o.identification_confidence]++;
+
+  const lowLatitude = sorted.filter((o) => o.latitude_indicator === 'low');
+
+  // Maunder-Minimum check: aurora records within Maunder (1645–1715)?
+  const maunderEra = sorted.filter((o) => o.year >= 1645 && o.year <= 1715);
+
+  return {
+    total: sorted.length,
+    earliestAny,
+    earliestAccepted,
+    earliestContested,
+    latest,
+    byEpoch,
+    byConfidence,
+    lowLatitude,
+    maunderEra
+  };
+}
+
+function renderReport({ cycles, cyc, minima, storms, auroras, daily, schemaColumns }) {
   const lines = [];
   lines.push('# HelioChronicles — Historical Analysis');
   lines.push('');
@@ -241,6 +297,7 @@ function renderReport({ cycles, cyc, minima, storms, daily, schemaColumns }) {
   const pieces = ['`data/cycles/solar_cycles.json`'];
   if (minima) pieces.push('`data/cycles/grand_minima.json`');
   if (storms) pieces.push('`data/events/historical_storms.json`');
+  if (auroras) pieces.push('`data/events/aurora_observations.json`');
   if (daily) pieces.push('`data/daily/*.csv`');
   lines.push(`Generated ${generated} from ${pieces.join(', ')}.`);
   lines.push('');
@@ -284,6 +341,52 @@ function renderReport({ cycles, cyc, minima, storms, daily, schemaColumns }) {
       lines.push(`The **Maunder Minimum** (${maunder.start_year}–${maunder.end_year}) left a gap of nearly 70 years with essentially no sunspot observations — fewer total sunspots over the whole minimum than a single recent active year. The **Dalton Minimum** (${dalton.start_year}–${dalton.end_year}) overlaps the start of the SILSO daily record (1818+) and is directly visible as SC5, SC6, and SC7 in the daily CSVs.`);
       lines.push('');
     }
+  }
+
+  // Section 3b — Pre-instrumental aurora observations
+  if (auroras && auroras.total > 0) {
+    lines.push('## Pre-instrumental sky records (aurora observations)');
+    lines.push('');
+    const spanYears = auroras.latest.year - auroras.earliestAccepted.year;
+    lines.push(`${auroras.total} peer-reviewed aurora identifications in historical chronicles, spanning **${formatHistoricalYear(auroras.earliestAccepted.year)} to ${formatHistoricalYear(auroras.latest.year)}** — a ${spanYears.toLocaleString()}-year reach, assembled from cuneiform tablets, Chinese court records, Japanese court diaries, Korean annals, European chronicles, and the first scientific monographs.`);
+    lines.push('');
+    lines.push(`- **Earliest accepted** (high-confidence): ${auroras.earliestAccepted.location}, ${formatHistoricalYear(auroras.earliestAccepted.year)} — ${auroras.earliestAccepted.significance}`);
+    if (auroras.earliestContested) {
+      lines.push(`- **Earliest contested:** ${auroras.earliestContested.location}, ${formatHistoricalYear(auroras.earliestContested.year)}. ${auroras.earliestContested.significance}`);
+    }
+    lines.push(`- **Confidence breakdown:** ${auroras.byConfidence.high} high-confidence, ${auroras.byConfidence.medium} medium, ${auroras.byConfidence.low} low.`);
+    lines.push(`- **Extreme-storm signature:** ${auroras.lowLatitude.length} of the ${auroras.total} observations were at low geomagnetic latitudes — in pre-instrumental data, low-latitude aurora is the only available indicator of storm intensity.`);
+    lines.push('');
+    lines.push('### By epoch');
+    lines.push('');
+    lines.push(`- **BCE (pre-Common-Era):** ${auroras.byEpoch.bce.length} record${auroras.byEpoch.bce.length === 1 ? '' : 's'}${auroras.byEpoch.bce.length ? ` — ${auroras.byEpoch.bce.map((o) => o.location + ' ' + formatHistoricalYear(o.year)).join('; ')}` : ''}.`);
+    lines.push(`- **Ancient (1–499 CE):** ${auroras.byEpoch.ce_ancient.length} record${auroras.byEpoch.ce_ancient.length === 1 ? '' : 's'}.`);
+    lines.push(`- **Medieval (500–1499 CE):** ${auroras.byEpoch.medieval.length} record${auroras.byEpoch.medieval.length === 1 ? '' : 's'}.`);
+    lines.push(`- **Early-modern (1500–1754 CE):** ${auroras.byEpoch.earlyModern.length} record${auroras.byEpoch.earlyModern.length === 1 ? '' : 's'}.`);
+    lines.push(`- **Post-1755 (within numbered cycles):** ${auroras.byEpoch.numbered.length} record${auroras.byEpoch.numbered.length === 1 ? '' : 's'}.`);
+    lines.push('');
+    lines.push('### Notable cross-corroborations');
+    lines.push('');
+    lines.push('- The **776 CE Anglo-Saxon "red crosses"** entry matches within months the 774/775 CE Miyake ¹⁴C spike — one of the cleanest agreements between written and cosmogenic records in all of paleoaurora research.');
+    lines.push('- The **Assyrian tablets (~660 BCE)** fall within decades of the 660 BCE Miyake event identified in ¹⁰Be ice-core records (O’Hare et al. 2019) — a 2,700-year-deep independent confirmation.');
+    lines.push('- The **1770 CE East Asian multi-night storm** (Hayakawa et al. 2017) is argued to be comparable to or larger than the 1859 Carrington Event, with aurora reported at geomagnetic latitudes below 20° across four continents.');
+    lines.push('');
+    if (auroras.maunderEra.length === 0) {
+      lines.push('### The Maunder Minimum gap');
+      lines.push('');
+      lines.push('Aurora records in this catalog drop to **zero** during the Maunder Minimum (1645–1715). This absence is one of the strongest independent signals that the Sun really was quiet during the minimum, not merely poorly observed — the era has abundant scientific and chronicle writing in general, but the skies went dark. Halley’s 1716 account, which marks the end of the Maunder gap in this catalog, explicitly notes aurora had been absent from Britain for living memory.');
+    } else {
+      lines.push(`### The Maunder Minimum`);
+      lines.push('');
+      lines.push(`${auroras.maunderEra.length} record${auroras.maunderEra.length === 1 ? '' : 's'} fall within the Maunder Minimum (1645–1715) — far sparser than either adjacent century, consistent with the minimum’s near-absence of sunspots.`);
+    }
+    lines.push('');
+    lines.push('### Chronological index');
+    lines.push('');
+    lines.push(renderAuroraTable([...auroras.byEpoch.bce, ...auroras.byEpoch.ce_ancient, ...auroras.byEpoch.medieval, ...auroras.byEpoch.earlyModern, ...auroras.byEpoch.numbered]));
+    lines.push('');
+    lines.push('_See `data/events/aurora_observations.json` for description text and full citations on every entry._');
+    lines.push('');
   }
 
   // Section 4 — Current cycle
@@ -381,6 +484,7 @@ function renderReport({ cycles, cyc, minima, storms, daily, schemaColumns }) {
   lines.push(`- Peak SSN values are **smoothed monthly means** at the reported maximum month, V2.0 scale. Daily values in \`data/daily/\` are raw (unsmoothed) and therefore peak higher than the cycle peak value.`);
   if (minima) lines.push(`- Grand minima boundaries in \`data/cycles/grand_minima.json\` are approximate. Telescopic minima (Maunder, Dalton) are from direct observation; pre-telescopic minima are from cosmogenic isotope reconstructions with uncertainty on the order of decades.`);
   if (storms) lines.push(`- Historical storms in \`data/events/historical_storms.json\` are hand-curated from peer-reviewed sources. \`dst_nT_est\` values before the satellite era (pre-1957) are reconstructions from magnetogram archives with order-of-magnitude uncertainty. See each event's \`sources\` list for the primary reference.`);
+  if (auroras) lines.push(`- Pre-instrumental aurora observations in \`data/events/aurora_observations.json\` are identifications made by modern paleoaurora researchers from historical chronicles; the cited paper did the work of distinguishing aurora from meteor, comet, and atmospheric optical phenomena. Identification confidence is preserved per entry. This catalog cannot be used for quantitative intensity reconstruction — only the lowest-latitude reach of visible aurora is available as a qualitative storm-strength indicator.`);
   lines.push(`- Era groupings are a convention of this report, not a formally defined solar-physics classification.`);
   lines.push(`- The daily table follows the 13-column spec in \`docs/DATA_DICTIONARY.md\`: ${schemaColumns.join(', ')}.`);
   lines.push('');
@@ -401,6 +505,10 @@ async function main() {
   const storms = stormsDoc?.events ?? null;
   if (storms) log.ok(`loaded ${storms.length} historical storms`);
 
+  const auroraDoc = await tryLoadJSON('events/aurora_observations.json');
+  const auroras = auroraAnalysis(auroraDoc?.observations ?? null);
+  if (auroras) log.ok(`loaded ${auroras.total} pre-instrumental aurora observations`);
+
   const daily = dailyAnalysis(await tryLoadDailyCSVs());
 
   const report = renderReport({
@@ -408,6 +516,7 @@ async function main() {
     cyc,
     minima,
     storms,
+    auroras,
     daily,
     schemaColumns: DAILY_COLUMNS
   });

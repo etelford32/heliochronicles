@@ -48,6 +48,23 @@ contributed to that row, using the tokens in the "Source token" fields below.
   - Feynman, J. & Ruzmaikin, A. (2011). *The Sun's Strange Behavior: Maunder Minimum or Gleissberg Cycle?* Solar Physics 272, 351. doi:10.1007/s11207-011-9828-0
 - **License:** CC BY 4.0 for the compiled table. The underlying reconstructions remain the intellectual property of their authors; follow the journal's reuse terms for direct quotation.
 
+## Pre-instrumental aurora observations (660 BCE – 1847 CE)
+
+- **Format in this repo:** `data/events/aurora_observations.json`, hand-authored from peer-reviewed paleoaurora literature. Identifications — distinguishing aurora from meteor, comet, eclipse, and atmospheric optical phenomena — are attributed per entry to the cited researcher, not made by this catalog.
+- **Scope and limitations:** Cannot be used for quantitative space-weather reconstruction. There are no magnetograms before the 1830s and no systematic instrumental record before 1868. The lowest latitude at which aurora was reported is the only available qualitative indicator of storm strength. The file's `_notes_on_antiquity` block documents what is *not* here, including the absence of peer-reviewed aurora identifications in ancient Egyptian sources.
+- **Primary references:**
+  - Stephenson, F. R., Willis, D. M. & Hallinan, T. (2004). *The earliest datable observation of the aurora borealis.* Astronomy & Geophysics 45, 6.15. doi:10.1046/j.1468-4004.2004.45615.x — the ~660 BCE Assyrian tablet identification.
+  - Miyake, F. et al. (2012). *A signature of cosmic-ray increase in AD 774–775 from tree rings in Japan.* Nature 486, 240. doi:10.1038/nature11123 — cosmogenic cross-reference to Anglo-Saxon Chronicle aurora record.
+  - O'Hare, P. et al. (2019). *Multiradionuclide evidence for an extreme solar proton event around 2,610 BP (~660 BC).* PNAS 116, 5961. doi:10.1073/pnas.1815725116 — cross-reference to Assyrian tablets.
+  - Hayakawa, H. et al. (2017). *Long-lasting extreme magnetic storm activities in 1770 found in historical documents.* ApJ Letters 850, L31. doi:10.3847/2041-8213/aa9661 — the pre-Carrington benchmark event.
+  - Hayakawa, H. et al. (2016). *East Asian observations of low-latitude aurora during the Carrington magnetic storm.* PASJ 68, 99. doi:10.1093/pasj/psw097.
+  - Hayakawa, H. et al. (2019). *Records of sunspot and aurora during CE 960–1279 in the Chinese chronicle of the Song dynasty.* Earth, Planets & Space 71, 83. doi:10.1186/s40623-019-1062-2.
+  - Lee, E. H., Ahn, Y. S., Yang, H. J. & Chen, K. Y. (2004). *The sunspot and auroral activity cycle derived from Korean historical records of the 11th–18th century.* Solar Phys. 224, 373. doi:10.1007/s11207-005-4974-x.
+  - Usoskin, I. G. et al. (2013). *The AD775 cosmic event revisited: the Sun is to blame.* Astron. Astrophys. 552, L3. doi:10.1051/0004-6361/201321080.
+  - Halley, E. (1716). *An Account of the late surprizing Appearance of the Lights seen in the Air.* Phil. Trans. Roy. Soc. London 29, 406. doi:10.1098/rstl.1714.0050 — the first scientific monograph on aurora.
+  - Eddy, J. A. (1976). *The Maunder Minimum.* Science 192, 1189. doi:10.1126/science.192.4245.1189 — used the aurora-record gap as evidence of genuine solar quiescence.
+- **License:** CC BY 4.0 for the compiled catalog. Individual descriptions quote or paraphrase cited works under fair-use for commentary and reference; full citations are provided on every entry.
+
 ## Historical storms and events (1859–present)
 
 - **Format in this repo:** `data/events/historical_storms.json`, hand-authored from peer-reviewed sources and official agency reports. Every event entry carries its own `sources` array with citations.

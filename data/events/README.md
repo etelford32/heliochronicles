@@ -23,6 +23,25 @@ Each event has `id`, `name`, `date_start`, `date_end`, `type`, `cycle`,
 `dst_nT_est`, `storm_scale`, `aurora_lat_deg`) are populated where historical
 evidence supports a specific value; `null` otherwise.
 
+### `aurora_observations.json`
+
+Pre-instrumental and early-instrumental aurora observations identified in
+peer-reviewed paleoaurora research, spanning roughly **660 BCE to 1847 CE**.
+Entries are aurora identifications made by modern researchers from cuneiform
+tablets, Chinese court records, Japanese diaries, Korean annals, European
+chronicles, and the first scientific monographs.
+
+The file's `_limitations` block is load-bearing: this catalog **cannot** be
+used for quantitative space-weather reconstruction. There is no magnetogram,
+no Dst, no Kp — only written descriptions and the latitude-reach of the
+aurora, used as a qualitative storm-strength indicator. Identification
+confidence (`high` / `medium` / `low`) is preserved on every entry.
+
+The file's `_notes_on_antiquity` block documents what is not in the catalog,
+most notably the lack of a peer-reviewed aurora identification in ancient
+Egyptian sources and the contested status of the Bamboo Annals ~977 BCE
+"five-colored light" record.
+
 ### Pending
 
 Systematic catalogs (CDAW LASCO CME catalog, NASA DONKI, NOAA event lists)

@@ -10,6 +10,30 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-21
+
+### Added
+
+- **`data/events/aurora_observations.json`** — pre-instrumental aurora catalog spanning **~660 BCE to 1847 CE**. 15 peer-reviewed identifications covering:
+  - Assyrian cuneiform tablets (~660 BCE) — earliest datable aurora observation currently accepted in peer-reviewed literature (Stephenson, Willis & Hallinan 2004).
+  - Greek, Roman, Japanese, Anglo-Saxon, Chinese Song, Korean Joseon, and medieval European sources.
+  - The 1770 CE multi-night East Asian extreme storm (Hayakawa et al. 2017) — the pre-Carrington benchmark, aurora reported at geomagnetic latitudes below 20° across four continents.
+  - Halley's 1716 account (the first scientific monograph on aurora) and Tycho Brahe's 1580 observation.
+  - The contested Bamboo Annals (~977 BCE) entry, included with a low-confidence flag for completeness.
+- The file's `_notes_on_antiquity` block explicitly documents what is *not* in the catalog — no peer-reviewed aurora identification in ancient Egyptian sources (Tulli Papyrus is widely regarded as a 20th-century forgery), and the cosmogenic-isotope "Miyake events" (660 BCE, 774/775 CE, 993/994 CE) that provide an independent parallel track of evidence.
+
+### Changed
+
+- `scripts/analyze.mjs` extended with an aurora-catalog section in `docs/ANALYSIS.md`:
+  - Earliest-record callout (Assyrian ~660 BCE).
+  - Confidence breakdown (high/medium/low).
+  - Epoch aggregation (BCE, ancient CE, medieval, early-modern, post-1755).
+  - Cross-corroboration callouts (776 CE ↔ 774 CE Miyake, 660 BCE ↔ O'Hare 2019).
+  - **The Maunder Minimum gap** — the catalog has zero entries in the 1645–1715 window, one of the strongest signals that the Sun really was quiet during the minimum (consistent with Eddy 1976).
+- `SOURCES.md` gains a dedicated pre-instrumental aurora section citing Stephenson 2004, Miyake 2012, O'Hare 2019, Hayakawa 2016/2017/2019, Lee 2004, Usoskin 2013, Halley 1716, and Eddy 1976.
+- `docs/DATA_DICTIONARY.md` gains the aurora-catalog field spec.
+- `data/events/README.md` documents the curation and limitation conventions.
+
 ## [0.4.0] - 2026-04-21
 
 ### Added
@@ -77,7 +101,8 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.5.0
 [0.4.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.4.0
 [0.3.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.3.0
 [0.2.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.2.0
