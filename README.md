@@ -91,3 +91,13 @@ The raw observations come from the institutions credited in [`SOURCES.md`](./SOU
 ## Contributing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md). Short version: every value traceable to a URL at an institutional provider or a peer-reviewed citation, every file reproducible from `npm run build` or hand-curated with sources, the schema in `docs/DATA_DICTIONARY.md` is the contract.
+
+---
+
+![The storms we have records of](./docs/charts/storm-waterfall.svg)
+
+14 storms. 165 years. Three provenance tiers: **measured** values from Kyoto WDC (1957+), **reconstructed** values from pre-Dst magnetogram archives, and one **estimated** outlier — the 2012 near-miss CME whose −1200 nT is a model projection of what would have happened if Earth had been in the path.
+
+The six tallest bars span 165 years of instrumental record. Four are pre-satellite reconstructions (Carrington 1859, 1872, the NY Railroad Storm 1921) and one is a hypothetical (July 2012). Only one is a measured 20th-century extreme: Quebec 1989 at Dst = −589 nT. The May 2024 **Gannon Storm** at Dst = −412 nT broke a 21-year drought of G5-class storms, dating back to Halloween 2003.
+
+Every bar is linked to its driving active region in `data/regions/notable_regions.json`, its peer-reviewed sources in `data/events/historical_storms.json`, and (once `npm run build hourly` populates OMNI) its measured hourly Dst trace in `data/hourly/*.csv` — where the integrity check verifies the catalog value matches the measured minimum within ±5 nT.

@@ -1,6 +1,6 @@
 {
   "name": "heliochronicles",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Three centuries of space weather, in one repo.",
   "type": "module",
   "private": true,
@@ -20,7 +20,9 @@
     "build:omni": "node scripts/build.mjs omni",
     "validate": "node scripts/validate.mjs",
     "analyze": "node scripts/analyze.mjs",
-    "render-hero": "node scripts/render-hero.mjs"
+    "render": "node scripts/render-hero.mjs && node scripts/render-waterfall.mjs",
+    "render-hero": "node scripts/render-hero.mjs",
+    "render-waterfall": "node scripts/render-waterfall.mjs"
   },
   "repository": {
     "type": "git",
