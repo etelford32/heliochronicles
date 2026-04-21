@@ -10,6 +10,38 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-04-21
+
+### Added — active regions
+
+- **`data/regions/notable_regions.json`** — hand-curated catalog of 11 solar active regions that drove catalog events, covering the modern Dst era plus the pre-NOAA 1972 case (USAF McMath 11976). Full per-region detail: first/last observed, peak magnetic class (Mt. Wilson), peak McIntosh morphology, peak area (MSH), peak flare class, X-class flare count, and produced-events back-reference.
+- **`data/regions/README.md`** — catalog conventions, curation criteria, and explicit documentation of the pre-1972 McMath-Hulbert numbering scheme.
+- **`scripts/sources/swpc-regions.mjs`** — stub for future bulk ingestion of the full NOAA SWPC Solar Region Summary archive (~18,000 daily files, 1972+). Tracked as a v1.x goal; the current curated catalog covers every measured-era storm in `historical_storms.json`.
+
+### Standardization across the historical layer
+
+- **Every storm in `historical_storms.json` now carries `source_region_ids`** — an array of region ids that produced the event. 8 of 14 storms link to regions; 6 carry empty arrays (pre-NOAA numbering for Carrington 1859, 1872, 1921, 1940; pre-modern-numbering 1956 GLE; backside ejection for the 2012 near-miss).
+- **Bidirectional linkage enforced**: `historical_storms.source_region_ids` ↔ `notable_regions.produced_events`. Build-time sanity check verifies every storm→region link has a matching region→storm link.
+
+### Storm-catalog integrity check (hardened)
+
+- `scripts/analyze.mjs` now produces an **explicit PASS / FAIL / INCOMPLETE** verdict for the storm catalog when hourly OMNI data is loaded. The check compares catalog `dst_nT` against the minimum hourly Dst observed within ±3 days of each event window, with a **±5 nT tolerance**.
+- Output surfaces the verdict with a status emoji (🟢 PASS, 🔴 FAIL, 🟡 INCOMPLETE, ⚪ not runnable), a summary block (measured-era storms / verified / unverified / max |Δ| / over-tolerance count), and a per-event table with Δ, pass/fail flag, and source AR column.
+- Over-tolerance events render an explicit "Investigate: upstream revision, smoothing convention, or curation bug" callout — making curation drift loud instead of silent.
+- Unit-tested against 6 synthetic fixtures: exact match (PASS), 10 nT off (FAIL), 4 nT edge (PASS), empty data (not runnable), no measured storms (not runnable), incomplete coverage (INCOMPLETE).
+- End-to-end smoke-tested: synthetic 8-row hourly CSV at catalog Dst values → integrity renders `🟢 PASS — all 8 measured-era storms match within ±5 nT. max |Δ| 0.0 nT.`
+
+### Analyze report
+
+- New **"Source active regions"** section with per-region table (region, cycle, observation window, peak magnetic class, peak area, peak flare, driven events) and a list of unlinked storms with explicit reason (pre-numbering / ambiguous / backside).
+- Storm-catalog cross-reference table extended with **Source AR column**, **Δ column**, and **Within ±5 nT flag** — every row now shows the full provenance chain from event to source region to measured hourly Dst.
+- Methodology section documents region curation and integrity-check verdict when hourly data is loaded.
+
+### Docs
+
+- `docs/DATA_DICTIONARY.md` gains the full spec for `data/regions/notable_regions.json`.
+- `SOURCES.md` gains a notable-regions section citing Boteler 2019, Knipp 2018, Gopalswamy 2005, Sun 2015, Redmon 2018, and Parker & Linares 2024.
+
 ## [0.7.0] - 2026-04-21
 
 ### Added — hourly cadence
@@ -152,7 +184,8 @@ users can decide whether to repin.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.8.0
 [0.7.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.7.0
 [0.6.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.6.0
 [0.5.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.5.0

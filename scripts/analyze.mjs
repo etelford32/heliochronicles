@@ -31,6 +31,12 @@ function extremes(items, key) {
   return { max, min };
 }
 
+function formatRegionLabel(region) {
+  if (!region) return '—';
+  if (region.numbering_scheme === 'mcmath') return `McMath ${region.pre_noaa_number}`;
+  return `AR ${region.noaa_number}`;
+}
+
 function renderCycleTable(cycles) {
   const rows = cycles.map((c) => {
     const dur = c.duration_years === null ? '—' : c.duration_years.toFixed(1);
@@ -251,16 +257,22 @@ function hourlyAnalysis(rows, storms) {
     .sort((a, b) => b.v_sw - a.v_sw)
     .slice(0, 10);
 
-  // Storm-catalog cross-reference: for each measured-era storm, find the
-  // minimum Dst within ±3 days of the event window.
+  // Storm-catalog integrity check: for each measured-era storm, find the
+  // minimum Dst within ±3 days of the event window and compare against the
+  // catalog-recorded value. Tolerance: ±5 nT.
+  const DST_TOLERANCE_NT = 5;
   const stormDst = [];
+  const unverified = [];
   if (storms) {
     for (const e of storms) {
       if (e.dst_source !== 'measured') continue;
       const startIdx = parsed.findIndex(
         (r) => daysBetween(r.date, e.date_start) <= 3
       );
-      if (startIdx === -1) continue;
+      if (startIdx === -1) {
+        unverified.push({ event: e.name, reason: 'no hourly rows within ±3 days of event window' });
+        continue;
+      }
       let minRow = null;
       for (let i = startIdx; i < parsed.length; i++) {
         const r = parsed[i];
@@ -269,15 +281,34 @@ function hourlyAnalysis(rows, storms) {
         if (minRow === null || r.dst < minRow.dst) minRow = r;
       }
       if (minRow) {
+        const delta = minRow.dst - e.dst_nT;
         stormDst.push({
           event: e.name,
+          storm_id: e.id,
           cataloged: e.dst_nT,
           measured: minRow.dst,
+          delta,
+          within: Math.abs(delta) <= DST_TOLERANCE_NT,
           hour: `${minRow.date}T${String(minRow.hour).padStart(2, '0')}`
         });
+      } else {
+        unverified.push({ event: e.name, reason: 'event window covered but all Dst values in window are null' });
       }
     }
   }
+
+  // Integrity summary
+  const measuredStormCount = storms ? storms.filter((s) => s.dst_source === 'measured').length : 0;
+  const integrity = {
+    tolerance_nT: DST_TOLERANCE_NT,
+    measuredStormCount,
+    verifiedCount: stormDst.length,
+    unverifiedCount: unverified.length,
+    overTolerance: stormDst.filter((s) => !s.within),
+    maxAbsDelta: stormDst.length ? Math.max(...stormDst.map((s) => Math.abs(s.delta))) : null,
+    passed: stormDst.length > 0 && stormDst.every((s) => s.within) && unverified.length === 0,
+    canRun: measuredStormCount > 0 && parsed.length > 0
+  };
 
   return {
     rows: parsed.length,
@@ -286,7 +317,9 @@ function hourlyAnalysis(rows, storms) {
     stormCounts,
     dstTop: dstSorted,
     vswTop: vswSorted,
-    stormDst
+    stormDst,
+    unverified,
+    integrity
   };
 }
 
@@ -490,7 +523,7 @@ function auroraAnalysis(observations) {
   };
 }
 
-function renderReport({ cycles, cyc, minima, storms, auroras, daily, hourly, yearly, schemaColumns }) {
+function renderReport({ cycles, cyc, minima, storms, regions, auroras, daily, hourly, yearly, schemaColumns }) {
   const lines = [];
   lines.push('# HelioChronicles — Historical Analysis');
   lines.push('');
@@ -498,6 +531,7 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, hourly, yea
   const pieces = ['`data/cycles/solar_cycles.json`'];
   if (minima) pieces.push('`data/cycles/grand_minima.json`');
   if (storms) pieces.push('`data/events/historical_storms.json`');
+  if (regions) pieces.push('`data/regions/notable_regions.json`');
   if (auroras) pieces.push('`data/events/aurora_observations.json`');
   if (yearly) pieces.push('`data/yearly/yearly_1610-today.csv`');
   if (daily) pieces.push('`data/daily/*.csv`');
@@ -673,6 +707,46 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, hourly, yea
     }
   }
 
+  // Section 6b — Source active regions
+  if (regions && regions.list.length > 0) {
+    lines.push('---');
+    lines.push('');
+    lines.push('## Source active regions');
+    lines.push('');
+    lines.push(`${regions.list.length} hand-curated active regions drove the measured-era entries in the storm catalog. Each is linked bidirectionally: storms reference regions via \`source_region_ids\`; regions reference storms via \`produced_events\`.`);
+    lines.push('');
+    lines.push('| Region | Cycle | Observed | Peak mag. class | Peak area (MSH) | Peak flare | Drove |');
+    lines.push('|:-------|:-----:|:---------|:----------------|----------------:|:----------:|:------|');
+    for (const r of regions.list) {
+      const label = formatRegionLabel(r);
+      const observed = `${r.first_observed} → ${r.last_observed}`;
+      const area = r.peak_area_msh ?? '—';
+      const flare = r.peak_flare ?? '—';
+      const drove = r.produced_events.length > 0
+        ? r.produced_events.map((id) => {
+            const storm = storms?.find((e) => e.id === id);
+            return storm ? storm.name : id;
+          }).join('; ')
+        : '—';
+      lines.push(`| **${label}** | SC${r.cycle} | ${observed} | ${r.peak_magnetic_class} | ${area} | ${flare} | ${drove} |`);
+    }
+    lines.push('');
+    const unmapped = storms ? storms.filter((e) => e.source_region_ids.length === 0) : [];
+    if (unmapped.length > 0) {
+      lines.push(`**Events without a linked source region (${unmapped.length}):**`);
+      lines.push('');
+      for (const e of unmapped) {
+        const reason = e.date_start < '1972-01-01'
+          ? 'pre-NOAA numbering scheme'
+          : e.id === 'july-2012-near-miss'
+            ? 'CME originated from a backside region at time of ejection'
+            : 'source region ambiguous';
+        lines.push(`- **${e.name}** (${e.date_start}): ${reason}.`);
+      }
+      lines.push('');
+    }
+  }
+
   // Section 7 — Daily record (if present)
   lines.push('---');
   lines.push('');
@@ -745,20 +819,65 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, hourly, yea
       }
       lines.push('');
     }
-    if (hourly.stormDst.length > 0) {
-      lines.push('### Storm-catalog cross-reference');
+    lines.push('### Storm-catalog integrity check');
+    lines.push('');
+    const ig = hourly.integrity;
+    if (!ig.canRun) {
+      lines.push('⚪ **Not runnable** — either no measured-era storms in the catalog, or no hourly rows loaded.');
+    } else {
+      const statusEmoji = ig.passed ? '🟢' : (ig.overTolerance.length > 0 ? '🔴' : '🟡');
+      const statusLabel = ig.passed
+        ? `**PASS** — all ${ig.verifiedCount} measured-era storms match within ±${ig.tolerance_nT} nT`
+        : ig.overTolerance.length > 0
+          ? `**FAIL** — ${ig.overTolerance.length} of ${ig.verifiedCount} verifiable storms exceed the ±${ig.tolerance_nT} nT tolerance`
+          : `**INCOMPLETE** — ${ig.unverifiedCount} of ${ig.measuredStormCount} measured-era storms have no hourly coverage`;
+      lines.push(`${statusEmoji} ${statusLabel}.`);
       lines.push('');
+      lines.push(`- Measured-era storms in catalog: **${ig.measuredStormCount}**`);
+      lines.push(`- Verified against OMNI hourly Dst: **${ig.verifiedCount}**`);
+      lines.push(`- Unverified (no hourly coverage): **${ig.unverifiedCount}**`);
+      if (ig.maxAbsDelta !== null) lines.push(`- Maximum \|Δ\| catalog − measured: **${ig.maxAbsDelta.toFixed(1)} nT** (tolerance ${ig.tolerance_nT} nT)`);
+      lines.push(`- Over-tolerance events: **${ig.overTolerance.length}**`);
+    }
+    lines.push('');
+
+    if (hourly.stormDst.length > 0) {
       lines.push('For each measured-era entry in `data/events/historical_storms.json`, the minimum hourly Dst observed within ±3 days of the event window:');
       lines.push('');
-      lines.push('| Event | Catalog Dst (nT) | Measured min (nT) | At hour (UT) |');
-      lines.push('|:------|-----------------:|------------------:|:------------:|');
+      const hasRegions = regions && regions.byId && regions.byId.size > 0;
+      if (hasRegions) {
+        lines.push('| Event | Source AR | Catalog Dst (nT) | Measured min (nT) | Δ (nT) | Within ±5 nT | At hour (UT) |');
+        lines.push('|:------|:---------:|-----------------:|------------------:|-------:|:------------:|:------------:|');
+      } else {
+        lines.push('| Event | Catalog Dst (nT) | Measured min (nT) | Δ (nT) | Within ±5 nT | At hour (UT) |');
+        lines.push('|:------|-----------------:|------------------:|-------:|:------------:|:------------:|');
+      }
       for (const s of hourly.stormDst) {
-        const delta = s.measured - s.cataloged;
-        const agree = Math.abs(delta) <= 5 ? '' : ` _(Δ ${delta > 0 ? '+' : ''}${delta})_`;
-        lines.push(`| ${s.event} | ${fmt.signedInt(s.cataloged)} | ${fmt.signedInt(s.measured)}${agree} | ${s.hour} |`);
+        const deltaStr = `${s.delta > 0 ? '+' : ''}${s.delta}`;
+        const flag = s.within ? '✓' : '✗';
+        if (hasRegions) {
+          const stormObj = storms.find((e) => e.id === s.storm_id);
+          const arCell = stormObj && stormObj.source_region_ids.length > 0
+            ? stormObj.source_region_ids.map((rid) => formatRegionLabel(regions.byId.get(rid))).join(', ')
+            : '—';
+          lines.push(`| ${s.event} | ${arCell} | ${fmt.signedInt(s.cataloged)} | ${fmt.signedInt(s.measured)} | ${deltaStr} | ${flag} | ${s.hour} |`);
+        } else {
+          lines.push(`| ${s.event} | ${fmt.signedInt(s.cataloged)} | ${fmt.signedInt(s.measured)} | ${deltaStr} | ${flag} | ${s.hour} |`);
+        }
       }
       lines.push('');
-      lines.push('_Catalog values are curated from the cited literature; any Δ of more than 5 nT between catalog and measured may indicate revision of published values, a different smoothing convention, or a curation bug worth investigating._');
+      if (hourly.integrity.overTolerance.length > 0) {
+        lines.push('**Events exceeding tolerance:**');
+        for (const s of hourly.integrity.overTolerance) {
+          lines.push(`- **${s.event}**: catalog ${fmt.signedInt(s.cataloged)}, measured ${fmt.signedInt(s.measured)}, Δ ${s.delta > 0 ? '+' : ''}${s.delta} nT. Investigate: upstream revision, smoothing convention, or curation bug.`);
+        }
+        lines.push('');
+      }
+    }
+    if (hourly.unverified.length > 0) {
+      lines.push('### Storms not cross-referenceable with loaded hourly data');
+      lines.push('');
+      for (const u of hourly.unverified) lines.push(`- **${u.event}**: ${u.reason}`);
       lines.push('');
     }
   }
@@ -772,6 +891,12 @@ function renderReport({ cycles, cyc, minima, storms, auroras, daily, hourly, yea
   lines.push(`- Peak SSN values are **smoothed monthly means** at the reported maximum month, V2.0 scale. Daily values in \`data/daily/\` are raw (unsmoothed) and therefore peak higher than the cycle peak value.`);
   if (minima) lines.push(`- Grand minima boundaries in \`data/cycles/grand_minima.json\` are approximate. Telescopic minima (Maunder, Dalton) are from direct observation; pre-telescopic minima are from cosmogenic isotope reconstructions with uncertainty on the order of decades.`);
   if (storms) lines.push(`- Historical storms in \`data/events/historical_storms.json\` are hand-curated from peer-reviewed sources. Every entry carries a \`dst_source\` tag distinguishing **measured** values from Kyoto WDC (1957+), **reconstructed** values from pre-Dst magnetogram archives (Kew/Greenwich/Colaba/Göttingen), and **estimated-hypothetical** values for the 2012 near-miss CME that never hit Earth.`);
+  if (regions) lines.push(`- Active regions in \`data/regions/notable_regions.json\` are hand-curated, peer-reviewed entries covering the regions that drove measured-era catalog events plus a few historically distinctive regions (e.g. AR 12192 for its size). Storms and regions are linked bidirectionally via \`source_region_ids\` and \`produced_events\` with a build-time symmetry check. Pre-1972 entries use the USAF McMath-Hulbert numbering scheme. Bulk ingestion of the full NOAA SWPC Solar Region Summary archive (~18,000 daily files) remains an open goal; see \`scripts/sources/swpc-regions.mjs\` for the parser stub.`);
+  if (hourly && hourly.integrity?.canRun) {
+    const ig = hourly.integrity;
+    const verdict = ig.passed ? 'PASS' : (ig.overTolerance.length > 0 ? 'FAIL' : 'INCOMPLETE');
+    lines.push(`- **Storm-catalog integrity check** against OMNI hourly Dst: **${verdict}**. ${ig.verifiedCount}/${ig.measuredStormCount} measured-era storms cross-referenced${ig.maxAbsDelta !== null ? `; max |Δ| ${ig.maxAbsDelta.toFixed(1)} nT (tolerance ${ig.tolerance_nT} nT)` : ''}. Any catalog value that drifts beyond tolerance against measured OMNI Dst is surfaced in the hourly section as a flagged row.`);
+  }
   if (yearly) lines.push(`- The yearly long-record table (\`data/yearly/yearly_1610-today.csv\`) combines SILSO yearly mean SSN (1700+) with the Hoyt-Schatten / Svalgaard-Schatten Group Number reconstruction (1610+). The GSN is published on a harmonized scale with the modern SSN but carries higher uncertainty in early decades; the \`gsn_observers\` column indicates how many observer reports underlie each year.`);
   if (hourly) lines.push(`- The hourly table (\`data/hourly/*.csv\`) extracts 11 curated columns from NASA OMNI 2's 55-column hourly merged record. OMNI composites solar-wind and IMF measurements from multiple L1 spacecraft and re-packages Dst (Kyoto WDC), AE (Kyoto WDC), and ap (GFZ) as convenience columns — so our hourly table carries the Kyoto-WDC Dst series that underpins the \`dst_source: measured\` tags in the storm catalog. Fill values (999.9, 9999999., 99999, etc.) are normalized to null at parse time.`);
   if (auroras) lines.push(`- Pre-instrumental aurora observations in \`data/events/aurora_observations.json\` are identifications made by modern paleoaurora researchers from historical chronicles; the cited paper did the work of distinguishing aurora from meteor, comet, and atmospheric optical phenomena. Identification confidence is preserved per entry. This catalog cannot be used for quantitative intensity reconstruction — only the lowest-latitude reach of visible aurora is available as a qualitative storm-strength indicator.`);
@@ -795,6 +920,12 @@ async function main() {
   const storms = stormsDoc?.events ?? null;
   if (storms) log.ok(`loaded ${storms.length} historical storms`);
 
+  const regionsDoc = await tryLoadJSON('regions/notable_regions.json');
+  const regions = regionsDoc?.regions
+    ? { list: regionsDoc.regions, byId: new Map(regionsDoc.regions.map((r) => [r.id, r])) }
+    : null;
+  if (regions) log.ok(`loaded ${regions.list.length} notable active regions`);
+
   const auroraDoc = await tryLoadJSON('events/aurora_observations.json');
   const auroras = auroraAnalysis(auroraDoc?.observations ?? null);
   if (auroras) log.ok(`loaded ${auroras.total} pre-instrumental aurora observations`);
@@ -811,6 +942,7 @@ async function main() {
     cyc,
     minima,
     storms,
+    regions,
     auroras,
     daily,
     hourly,

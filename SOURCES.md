@@ -97,6 +97,20 @@ contributed to that row, using the tokens in the "Source token" fields below.
   - Eddy, J. A. (1976). *The Maunder Minimum.* Science 192, 1189. doi:10.1126/science.192.4245.1189 — used the aurora-record gap as evidence of genuine solar quiescence.
 - **License:** CC BY 4.0 for the compiled catalog. Individual descriptions quote or paraphrase cited works under fair-use for commentary and reference; full citations are provided on every entry.
 
+## Notable active regions (1972–present, with pre-1972 McMath catalog entries)
+
+- **Source tokens:** `swpc` (NOAA numbered regions), `mcmath` (pre-1972 USAF McMath-Hulbert scheme)
+- **Format in this repo:** `data/regions/notable_regions.json`, hand-authored from peer-reviewed sources and official agency reports. Each entry carries its own `sources` array.
+- **Provider for bulk archive (pending v1.x ingestion):** NOAA SWPC Solar Region Summary (SRS), jointly published with USAF. The SRS archive holds one daily file per day listing every visible region with location, Mt. Wilson magnetic class, McIntosh morphology, area, and spot count. URL: https://services.swpc.noaa.gov/text/srs.txt (current only); historical archive at https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/sunspot-regions/
+- **Key references** (per-entry citations live in the JSON file itself):
+  - Boteler, D. H. (2019). *A 21st Century View of the March 1989 Magnetic Storm.* Space Weather 17, 1427. doi:10.1029/2019SW002278 — AR 5395.
+  - Knipp, D. J. et al. (2018). *On the Little-Known Consequences of the 4 August 1972 Ultra-Fast Coronal Mass Ejecta.* Space Weather 16, 1635. doi:10.1029/2018SW002024 — McMath 11976.
+  - Gopalswamy, N. et al. (2005). *Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003.* J. Geophys. Res. 110, A09S15. doi:10.1029/2004JA010958 — AR 10484, 10486, 10488.
+  - Sun, X. et al. (2015). *Why is the great solar active region 12192 flare-rich but CME-poor?* ApJ Letters 804, L28. doi:10.1088/2041-8205/804/2/L28 — AR 12192.
+  - Redmon, R. J. et al. (2018). *September 2017's geoeffective space weather and impacts to Caribbean radio communications during hurricane response.* Space Weather 16, 1190. doi:10.1029/2018SW001897 — AR 12673.
+  - Parker, W. E. & Linares, R. (2024). *Satellite Drag Analysis During the May 2024 Gannon Geomagnetic Storm.* AIAA preprint — AR 13664.
+- **License:** CC BY 4.0 for the compiled table. Individual peer-reviewed works remain under their journal's terms; this catalog quotes/paraphrases under fair-use for commentary.
+
 ## Historical storms and events (1859–present)
 
 - **Format in this repo:** `data/events/historical_storms.json`, hand-authored from peer-reviewed sources and official agency reports. Every event entry carries its own `sources` array with citations.

@@ -14,6 +14,7 @@
     "cycle":             "solar cycle number at the time of the event",
     "significance":      "one-sentence plain-English rationale for inclusion",
     "effects":           "list of documented real-world effects",
+    "source_region_ids": "list of ids in data/regions/notable_regions.json that produced this event; empty array when the driver region is unknown (pre-numbering era) or ambiguous (backside / limb crossings)",
     "sources":           "list of citations — papers, agency reports, observational logs"
   },
   "events": [
@@ -35,6 +36,7 @@
         "Auroras reported in Cuba, Colombia, Hawaii, and central Mexico",
         "Magnetograms at Kew (London) and Colaba (Bombay) went off-scale"
       ],
+      "source_region_ids": [],
       "sources": [
         { "citation": "Carrington, R. C. (1859). Description of a Singular Appearance seen in the Sun on September 1, 1859. MNRAS 20, 13." },
         { "citation": "Cliver, E. W. & Dietrich, W. F. (2013). The 1859 space weather event revisited: limits of extreme activity. J. Space Weather Space Clim. 3, A31.", "doi": "10.1051/swsc/2013053" },
@@ -58,6 +60,7 @@
         "Aurora logs from Egypt, India, Chile, and Japan",
         "Telegraph disruption across North America and Europe"
       ],
+      "source_region_ids": [],
       "sources": [
         { "citation": "Hayakawa, H. et al. (2018). The Great Space Weather Event during 1872 February Recorded in East Asia. ApJ 862, 15.", "doi": "10.3847/1538-4357/aaca40" }
       ]
@@ -80,6 +83,7 @@
         "Aurora reported as far south as Pasadena, CA and Samoa",
         "Transatlantic cable traffic halted"
       ],
+      "source_region_ids": [],
       "sources": [
         { "citation": "Hapgood, M. (2019). The Great Storm of May 1921: An Exemplar of a Dangerous Space Weather Event. Space Weather 17, 950–975.", "doi": "10.1029/2019SW002195" },
         { "citation": "Love, J. J. et al. (2019). On the intensity of the magnetic superstorm of September 1909. Space Weather 17, 37–45.", "doi": "10.1029/2018SW002079" }
@@ -102,6 +106,7 @@
         "Long-distance telephone and radio service disrupted",
         "Aurora visible across the continental US"
       ],
+      "source_region_ids": [],
       "sources": [
         { "citation": "Lanzerotti, L. J. (2017). Space weather strikes. Physics Today 70, 7, 9.", "doi": "10.1063/PT.3.3614" }
       ]
@@ -123,6 +128,7 @@
         "Neutron monitor counts increased by ~4500% at mid-latitudes",
         "Still the benchmark proton event for spacecraft shielding analysis"
       ],
+      "source_region_ids": [],
       "sources": [
         { "citation": "Meyer, P., Parker, E. N. & Simpson, J. A. (1956). Solar Cosmic Rays of February 1956 and their Propagation through Interplanetary Space. Phys. Rev. 104, 768.", "doi": "10.1103/PhysRev.104.768" }
       ]
@@ -145,6 +151,7 @@
         "Radio and power-grid disturbances in North America",
         "Declassified in 2018 as a U.S. Navy operational incident"
       ],
+      "source_region_ids": ["mcmath-11976"],
       "sources": [
         { "citation": "Knipp, D. J. et al. (2018). On the Little-Known Consequences of the 4 August 1972 Ultra-Fast Coronal Mass Ejecta. Space Weather 16, 1635–1643.", "doi": "10.1029/2018SW002024" }
       ]
@@ -167,6 +174,7 @@
         "Transformer damage at the Salem Nuclear Plant, New Jersey",
         "Aurora visible in Florida, Cuba, and Texas"
       ],
+      "source_region_ids": ["ar-5395"],
       "sources": [
         { "citation": "Boteler, D. H. (2019). A 21st Century View of the March 1989 Magnetic Storm. Space Weather 17, 1427–1441.", "doi": "10.1029/2019SW002278" },
         { "citation": "North American Electric Reliability Corporation (1990). March 13, 1989 Geomagnetic Disturbance." }
@@ -190,6 +198,7 @@
         "Polar-route airline rerouting",
         "GPS accuracy degraded by tens of meters"
       ],
+      "source_region_ids": ["ar-9077"],
       "sources": [
         { "citation": "Smith, Z. et al. (2003). A comparison of the bastille day event (2000 July 14) with the Halloween storm (2003 October 29). Solar Phys. 225, 377." },
         { "citation": "NOAA SWPC event report, July 2000." }
@@ -214,6 +223,7 @@
         "Airlines rerouted across polar corridors for a week",
         "FAA declared the first-ever space-weather flight diversion advisory"
       ],
+      "source_region_ids": ["ar-10484", "ar-10486", "ar-10488"],
       "sources": [
         { "citation": "Gopalswamy, N. et al. (2005). Solar sources and geospace consequences of intense geomagnetic storms in October–November 2003. J. Geophys. Res. 110, A09S15.", "doi": "10.1029/2004JA010958" },
         { "citation": "NOAA SWPC (2004). Halloween storms event review." }
@@ -236,6 +246,7 @@
         "Short-wave radio blackouts lasting hours",
         "GPS position errors up to tens of meters"
       ],
+      "source_region_ids": ["ar-10808"],
       "sources": [
         { "citation": "NOAA SWPC event archive, September 2005." }
       ]
@@ -257,6 +268,7 @@
         "No terrestrial effects — Earth was not in the path",
         "Observed only because STEREO-A was ahead of Earth in its orbit"
       ],
+      "source_region_ids": [],
       "sources": [
         { "citation": "Baker, D. N. et al. (2013). A major solar eruptive event in July 2012: Defining extreme space weather scenarios. Space Weather 11, 585–591.", "doi": "10.1002/swe.20097" },
         { "citation": "Liu, Y. D. et al. (2014). Observations of an extreme storm in interplanetary space caused by successive coronal mass ejections. Nat. Commun. 5, 3481.", "doi": "10.1038/ncomms4481" }
@@ -279,6 +291,7 @@
         "Radio blackouts across the sunlit side of Earth",
         "Amateur radio and aviation HF disrupted during Atlantic hurricane response"
       ],
+      "source_region_ids": ["ar-12673"],
       "sources": [
         { "citation": "Redmon, R. J. et al. (2018). September 2017's geoeffective space weather and impacts to caribbean radio communications during hurricane response. Space Weather 16, 1190–1201.", "doi": "10.1029/2018SW001897" }
       ]
@@ -302,6 +315,7 @@
         "Aurora photographed from Puerto Rico, Mexico, Kenya, and India",
         "No major power-grid outages reported"
       ],
+      "source_region_ids": ["ar-13664"],
       "sources": [
         { "citation": "NOAA SWPC (2024). Mother's Day Geomagnetic Storm." },
         { "citation": "Parker, W. E. & Linares, R. (2024). Satellite Drag Analysis During the May 2024 Gannon Geomagnetic Storm. AIAA preprint." }
@@ -324,6 +338,7 @@
         "Aurora visible from Florida, southern France, and Greece",
         "Short-wave radio blackouts across Americas"
       ],
+      "source_region_ids": ["ar-13848"],
       "sources": [
         { "citation": "NOAA SWPC (2024). October 2024 G4 storm event summary." }
       ]

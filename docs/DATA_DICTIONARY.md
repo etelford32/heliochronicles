@@ -179,12 +179,37 @@ Pre-instrumental and early-instrumental aurora observations identified in peer-r
 
 The file's `_notes_on_antiquity` object documents what is *not* in the catalog: no peer-reviewed aurora identification in ancient Egyptian sources, the Bamboo Annals (~977 BCE) remains contested, and cosmogenic isotope evidence (Miyake events) provides a parallel track of evidence that sometimes cross-corroborates the written record (e.g., 774/775 CE).
 
+### `data/regions/notable_regions.json`
+
+Hand-curated catalog of solar active regions that drove significant events in the historical record. Bidirectionally linked with `historical_storms.json` via `source_region_ids` / `produced_events`. Not a complete ingestion of the NOAA SWPC Solar Region Summary archive — see `scripts/sources/swpc-regions.mjs` for the bulk-ingestion stub planned for v1.x.
+
+| field                    | type         | description                                                                 |
+|--------------------------|--------------|-----------------------------------------------------------------------------|
+| `id`                     | string       | Stable slug (e.g. `ar-13664`, `mcmath-11976`)                               |
+| `noaa_number`            | int\|null    | NOAA SWPC-assigned region number (1972+); `null` for pre-NOAA entries       |
+| `pre_noaa_number`        | int\|null    | USAF McMath-Hulbert number for pre-1972 entries; `null` otherwise           |
+| `numbering_scheme`       | enum         | `noaa` (1972+) or `mcmath` (pre-1972)                                       |
+| `first_observed`         | date (ISO)   | First appearance on the Earth-facing disk                                   |
+| `last_observed`          | date (ISO)   | Last appearance before limb crossing or decay                               |
+| `cycle`                  | int          | Solar cycle number                                                          |
+| `peak_magnetic_class`    | enum         | Mt. Wilson class at peak: `alpha`, `beta`, `beta-gamma`, `beta-gamma-delta` |
+| `peak_mcintosh`          | string\|null | Modified-Zurich (McIntosh) class at peak (e.g. `Fkc`); `null` when unknown  |
+| `peak_area_msh`          | int          | Peak spot-group area in millionths of the solar hemisphere                  |
+| `peak_flare`             | string\|null | Largest X-ray flare class produced (e.g. `X28+`); `null` when unknown       |
+| `flare_count_x_class`    | int\|null    | Count of X-class flares produced; `null` when unknown                       |
+| `significance`           | string       | One-sentence rationale for inclusion                                        |
+| `produced_events`        | array        | List of `id` values in `historical_storms.json` driven by this region       |
+| `sources`                | array        | Peer-reviewed citations                                                     |
+
+Entries earn inclusion by producing a catalog event, producing an X5+ flare, exceeding 2000 MSH peak area, or having a dedicated peer-reviewed case study. Storm↔region linkage is symmetric — a build-time sanity check verifies that every storm-to-region link has a matching region-to-storm link.
+
 ## File layout
 
 - `data/hourly/hourly_YYYY-YYYY.csv` — decade CSV chunks of the hourly table (1963+).
 - `data/daily/daily_YYYY-YYYY.csv` — 50-year CSV chunks of the daily table (1818+).
 - `data/monthly/monthly_1749-today.csv` — single-file monthly SSN (1749+).
 - `data/yearly/yearly_1610-today.csv` — single-file yearly SSN + GSN (1610+).
+- `data/regions/notable_regions.json` — curated active-region catalog, storm-linked.
 - `data/cycles/solar_cycles.json` — curated numbered-cycle table (1755+).
 - `data/cycles/grand_minima.json` — curated grand solar minima, including pre-instrumental reconstructions.
 - `data/events/historical_storms.json` — hand-curated catalog of notable storms and events (1859+).
