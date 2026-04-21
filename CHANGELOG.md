@@ -10,6 +10,35 @@ users can decide whether to repin.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-04-21
+
+Visual layer expansion. Hero redesigned to tell the long-view story; storm waterfall added as an emotional hook near the bottom of the README.
+
+### Changed — hero redesigned
+
+`docs/charts/hero.svg` is now a two-panel composition, same canvas size:
+
+- **Top panel — 2,500-year long-view** (1000 BCE → today). Aurora observations as dotted ticks along the top row (filled = high-confidence, hollow = medium/low), with 5 key events labeled (Assyrian 660 BCE, Aristotle, 776 CE Miyake-coincident Anglo-Saxon, Halley 1716, Hayakawa 1770). Grand minima shaded as vertical bands across the panel (Oort, Wolf, Spörer, Maunder, Dalton, Gleissberg). Numbered-cycles era as a solar-gradient strip in the right 10% with thin cycle dividers. Storm markers along the bottom row.
+- **Bottom panel — the 25 numbered cycles** (1700 → 2030). Normalized x-axis (no more empty left third). Each cycle rendered as a filled triangle from `min_start` → `max` → `min_end`, so the rise-and-fall shape is visible. SC19 highlighted in peak-red with a callout. Dalton Minimum shaded. Mean peak SSN line drawn across. Y-axis labeled 0–300.
+
+### Added — storm waterfall
+
+`docs/charts/storm-waterfall.svg` — the emotional-hook chart near the bottom of the README. X-axis 1855 → 2030, y-axis inverted Dst (0 at top, −1200 at bottom). Every storm in `historical_storms.json` with a Dst value renders as a downward bar, color-coded by `dst_source`:
+
+- **Red** (measured): 1972 Aug, Quebec 1989, Bastille 2000, Halloween 2003, Sept 2005, Sept 2017, Gannon 2024, Oct 2024
+- **Gray** (reconstructed): Carrington 1859, 1872 Feb, NY Railroad 1921, Easter 1940
+- **Blue** (estimated-hypothetical): July 2012 near-miss
+
+Top 5 by magnitude get name labels with leader lines. Severity thresholds (G3 strong, G4 severe, G5 extreme, Carrington-class) labeled on the right axis. Gannon gets a supplementary annotation ("first G5 since Halloween 2003") even though it doesn't crack the top 5 by raw magnitude.
+
+### Added — new renderer
+
+- `scripts/render-waterfall.mjs` — zero-dependency SVG renderer for the waterfall chart, same pattern as `render-hero.mjs`.
+
+### Changed — README
+
+- Waterfall embedded below the Contributing section as the emotional hook, with a paragraph explaining the three provenance tiers and the 21-year G5 drought broken by Gannon.
+
 ## [0.9.0] - 2026-04-21
 
 Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
@@ -212,7 +241,8 @@ Pre-1.0 polish. v1.0.0 is one `npm run build` + 🟢 integrity-check PASS away.
 - Build orchestrator with shared helpers for CSV writing, SHA-256 checksums, manifest generation, and fetch-with-retry.
 - Validator running schema + checksum + monotonic-date checks on every PR.
 
-[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/etelford32/heliochronicles/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.10.0
 [0.9.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.9.0
 [0.8.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.8.0
 [0.7.0]: https://github.com/etelford32/heliochronicles/releases/tag/v0.7.0
