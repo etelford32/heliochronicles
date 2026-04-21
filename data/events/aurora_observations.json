@@ -1,0 +1,280 @@
+{
+  "_schema": "Pre-instrumental and early-instrumental aurora observations recorded in historical chronicles, drawn from peer-reviewed paleoaurora research. Each entry is an aurora identification made by modern researchers from a specific historical text; the identification confidence and the original description are both preserved so readers can judge for themselves. Dates become progressively less certain going back; the earliest entries are calendar-year approximate at best. Curator: HelioChronicles. Last reviewed 2026-04.",
+  "_limitations": [
+    "This catalog CANNOT be used for quantitative space-weather reconstruction. There is no magnetogram, no Dst, no Kp — only written descriptions of what people saw.",
+    "'Intensity' in historical records is inferred from two indirect signals: the lowest geomagnetic latitude at which aurora was reported (lower = stronger storm), and the number of independent chronicles reporting the same night.",
+    "Identification as aurora (rather than meteor, comet, conjunction, volcanic twilight, or atmospheric optical phenomenon) is attributed per entry. The cited paleoaurora researcher did the work of distinguishing these; this catalog preserves their judgment.",
+    "Calendar conversion from historical sources (Assyrian eponym calendar, Chinese sexagenary cycle, Japanese era names, Julian calendar) is non-trivial. Where researchers give a date range rather than a single day, we preserve the range."
+  ],
+  "_notes_on_antiquity": {
+    "egyptian_records": "No peer-reviewed aurora identification has been made in ancient Egyptian sources, despite the reasonable hope that temple records or astronomical ceiling texts might contain one. The Tulli Papyrus (attributed to the reign of Thutmose III, c. 1480 BCE) is sometimes cited as a possible aurora or 'fiery disk' observation, but it is widely regarded as a 20th-century forgery (Condon Report 1968; Kottmeyer 2017), and even taken at face value the described phenomenon does not cleanly match aurora morphology. If a peer-reviewed identification in Egyptian sources appears in the future, it would be added here.",
+    "earliest_accepted": "The earliest datable aurora observation currently accepted in peer-reviewed literature is the ~660 BCE Assyrian cuneiform record (Stephenson, Willis & Hallinan 2004), preserved in astronomical diaries of the late Neo-Assyrian period.",
+    "earliest_contested": "The Chinese Bamboo Annals record of a 'five-colored light' near the palace of King Zhao of Zhou (~977 BCE, conventional chronology) is cited by some researchers as a candidate for the earliest aurora observation, but interpretation is contested and this catalog marks it low-confidence.",
+    "cosmogenic_context": "Independent of the written record, cosmogenic isotope spikes (¹⁴C in tree rings, ¹⁰Be in ice cores) identify several extreme solar proton events in antiquity — so-called 'Miyake events' at 774/775 CE, 993/994 CE, and 660 BCE (Miyake et al. 2012, 2013; O'Hare et al. 2019). The 774 CE Miyake event cross-corroborates the Anglo-Saxon Chronicle's 'red crosses' entry for that summer, providing a rare instance where written and physical records agree. The 660 BCE Miyake event coincides within decades of the Assyrian aurora tablets."
+  },
+  "_fields": {
+    "id":                       "stable slug",
+    "year":                     "calendar year (CE if positive, BCE if negative); integer approximate for pre-1000 CE",
+    "month":                    "integer 1–12, or null if not preserved",
+    "day":                      "integer 1–31, or null if not preserved",
+    "date_note":                "freeform note on date precision (e.g. 'range 660–655 BCE')",
+    "location":                 "approximate region of observation",
+    "description":              "short paraphrase or translated excerpt of the original record",
+    "identification_confidence":"high | medium | low — how confident are paleoaurora researchers that this was aurora and not something else?",
+    "latitude_indicator":       "low | mid | high — broad geomagnetic-latitude band of the observation site (low = extreme storm if aurora was visible)",
+    "cycle":                    "solar cycle number if post-1755; null otherwise",
+    "significance":             "one-line rationale for inclusion",
+    "sources":                  "peer-reviewed citations for the identification"
+  },
+  "observations": [
+    {
+      "id": "bamboo-annals-zhou",
+      "year": -977,
+      "month": null,
+      "day": null,
+      "date_note": "Conventional chronology places this during the reign of King Zhao of Zhou (~977–957 BCE); absolute date contested.",
+      "location": "Central Plains, China",
+      "description": "The Bamboo Annals describe a 'five-colored light' seen in the north during the reign of King Zhao of Zhou — later read by some scholars as an auroral display.",
+      "identification_confidence": "low",
+      "latitude_indicator": "low",
+      "cycle": null,
+      "significance": "Earliest candidate aurora record anywhere. Interpretation is contested; included here for completeness with low-confidence flag.",
+      "sources": [
+        { "citation": "Chapman, J. & Neuhäuser, R. (2019). Earliest candidate aurora records. Annales Geophysicae preprint discussion." }
+      ]
+    },
+    {
+      "id": "assyrian-660bce",
+      "year": -660,
+      "month": null,
+      "day": null,
+      "date_note": "Range 660–655 BCE, reign of Ashurbanipal; specific tablet dates recoverable from eponym calendar.",
+      "location": "Nineveh, Neo-Assyrian Empire (modern northern Iraq)",
+      "description": "Astronomical diaries record 'red cloud' and 'red covers the sky' observations, with phrasing distinct from the standard cuneiform idioms for meteors, conjunctions, or eclipses. Specifically matches aurora morphology per Stephenson, Willis & Hallinan 2004.",
+      "identification_confidence": "high",
+      "latitude_indicator": "mid",
+      "cycle": null,
+      "significance": "Earliest datable aurora observation currently accepted in peer-reviewed literature. Occurs within decades of the 660 BCE Miyake event in cosmogenic records — rare cross-corroboration at 2700-year depth.",
+      "sources": [
+        { "citation": "Stephenson, F. R., Willis, D. M. & Hallinan, T. (2004). The earliest datable observation of the aurora borealis. Astronomy & Geophysics 45, 6.15–6.17.", "doi": "10.1046/j.1468-4004.2004.45615.x" },
+        { "citation": "O'Hare, P. et al. (2019). Multiradionuclide evidence for an extreme solar proton event around 2,610 B.P. (~660 BC). PNAS 116, 5961.", "doi": "10.1073/pnas.1815725116" }
+      ]
+    },
+    {
+      "id": "aristotle-467bce",
+      "year": -467,
+      "month": null,
+      "day": null,
+      "date_note": "Aristotle (Meteorologica I.6, c. 350 BCE) compiles reports from earlier Greek sources, including descriptions attributed to the archonship of Asterios (~467 BCE).",
+      "location": "Greek Aegean",
+      "description": "Aristotle describes 'chasms, trenches, and blood-red colors' in the night sky — a common Greek trope for auroral displays, distinct from his language for meteors or the Milky Way.",
+      "identification_confidence": "medium",
+      "latitude_indicator": "low",
+      "cycle": null,
+      "significance": "Earliest attested Mediterranean aurora; low-latitude observation implies an extreme storm. The same passage is the etymological root of the later term 'aurora boreas.'",
+      "sources": [
+        { "citation": "Siscoe, G. L., Silverman, S. M. & Siebert, K. D. (2002). Ezekiel and the Northern Lights: Biblical aurora seems plausible. Eos, Trans. AGU 83, 189.", "doi": "10.1029/2002EO000113" },
+        { "citation": "Bhatnagar, A. & Livingston, W. (2005). Fundamentals of Solar Astronomy. World Scientific. ISBN 978-981-256-357-4." }
+      ]
+    },
+    {
+      "id": "roman-37ce",
+      "year": 37,
+      "month": null,
+      "day": null,
+      "date_note": "Reign of Tiberius, near Ostia, Rome",
+      "location": "Ostia, Roman Empire",
+      "description": "Seneca (Naturales Quaestiones I.15) records that the 'glow' above Ostia appeared so intense that a Roman cohort marched out to fight what they believed was a fire across the bay. No fire was found.",
+      "identification_confidence": "medium",
+      "latitude_indicator": "mid",
+      "cycle": null,
+      "significance": "A classic low-latitude aurora misidentification. Useful cultural record of how pre-scientific observers experienced an extreme auroral display.",
+      "sources": [
+        { "citation": "Siscoe, G. L. (1980). Evidence in the auroral record for secular solar variability. Rev. Geophys. 18, 647." },
+        { "citation": "Basurah, H. M. (2005). Auroral evidence for early high solar activities in historical records of the Arabs. J. Atmos. Solar-Terr. Phys. 67, 1382.", "doi": "10.1016/j.jastp.2005.07.009" }
+      ]
+    },
+    {
+      "id": "japan-620",
+      "year": 620,
+      "month": 12,
+      "day": 30,
+      "date_note": "Nihon Shoki (Chronicles of Japan), year 28 of Suiko, 12th month, day of the rat",
+      "location": "Asuka, Yamato (modern Nara, Japan)",
+      "description": "'A red apparition in the sky, shaped like a pheasant's tail' — standard classical Japanese aurora descriptor (akakino / 'red banner'), recorded as an omen.",
+      "identification_confidence": "high",
+      "latitude_indicator": "low",
+      "cycle": null,
+      "significance": "Earliest Japanese aurora with firm calendar date; low latitude implies a major storm. Hayakawa et al. established Japanese court records as one of the densest pre-modern aurora source bases.",
+      "sources": [
+        { "citation": "Hayakawa, H. et al. (2017). Long-lasting extreme magnetic storm activities in 1770 found in historical documents. ApJ Letters 850, L31.", "doi": "10.3847/2041-8213/aa9661" },
+        { "citation": "Hayakawa, H. et al. (2016). East Asian observations of low-latitude aurora during the Carrington magnetic storm. PASJ 68, 99.", "doi": "10.1093/pasj/psw097" }
+      ]
+    },
+    {
+      "id": "anglosaxon-776",
+      "year": 776,
+      "month": 6,
+      "day": null,
+      "date_note": "Anglo-Saxon Chronicle, summer of 776 CE; coincides within months of the 774-775 Miyake event in cosmogenic ¹⁴C records.",
+      "location": "British Isles",
+      "description": "The Anglo-Saxon Chronicle entry for 776 records 'red crosses' appearing in the sky after sunset. Matching descriptions appear in the Irish Annals of Ulster for the same year.",
+      "identification_confidence": "high",
+      "latitude_indicator": "mid",
+      "cycle": null,
+      "significance": "The single strongest cross-corroboration in paleoaurora research: a written aurora record from 776 CE matches — within months — the 774/775 CE Miyake event spike in tree-ring ¹⁴C, independently identified as an extreme solar proton event.",
+      "sources": [
+        { "citation": "Usoskin, I. G. et al. (2013). The AD775 cosmic event revisited: the Sun is to blame. Astron. Astrophys. 552, L3.", "doi": "10.1051/0004-6361/201321080" },
+        { "citation": "Miyake, F. et al. (2012). A signature of cosmic-ray increase in AD 774-775 from tree rings in Japan. Nature 486, 240.", "doi": "10.1038/nature11123" },
+        { "citation": "Neuhäuser, R. & Neuhäuser, D. L. (2015). Solar activity around AD 775 from aurorae and radiocarbon. Astron. Nachr. 336, 913.", "doi": "10.1002/asna.201512209" }
+      ]
+    },
+    {
+      "id": "china-1011",
+      "year": 1011,
+      "month": null,
+      "day": null,
+      "date_note": "Song Shi (History of Song), reign of Emperor Zhenzong",
+      "location": "Kaifeng, Northern Song (modern Henan, China)",
+      "description": "Song court records describe a 'red vapor' filling the night sky across several successive nights, spreading from the northern horizon to the zenith.",
+      "identification_confidence": "high",
+      "latitude_indicator": "low",
+      "cycle": null,
+      "significance": "Part of the dense Song-era Chinese aurora catalog (Hayakawa et al. 2019). Low-latitude, multi-night duration suggests a major storm episode; coincides with the Oort Minimum end.",
+      "sources": [
+        { "citation": "Hayakawa, H. et al. (2019). Records of sunspot and aurora during CE 960–1279 in the Chinese chronicle of the Song dynasty. Earth, Planets Space 71, 83.", "doi": "10.1186/s40623-019-1062-2" }
+      ]
+    },
+    {
+      "id": "matthew-paris-1192",
+      "year": 1192,
+      "month": null,
+      "day": null,
+      "date_note": "Chronica Majora, entry for 1192",
+      "location": "St Albans, England",
+      "description": "Matthew Paris records a 'great light in the sky toward the north,' bright enough to read by, persisting through the night.",
+      "identification_confidence": "high",
+      "latitude_indicator": "mid",
+      "cycle": null,
+      "significance": "Representative of the Wolf-Minimum era (~1280–1350 CE in standard chronologies). Occurs during the Medieval Warm Period preceding the Little Ice Age onset.",
+      "sources": [
+        { "citation": "Willis, D. M. & Stephenson, F. R. (2001). Solar and auroral evidence for an intense recurrent geomagnetic storm during December AD 1128. Annales Geophysicae 19, 289.", "doi": "10.5194/angeo-19-289-2001" }
+      ]
+    },
+    {
+      "id": "korea-joseon-1402",
+      "year": 1402,
+      "month": null,
+      "day": null,
+      "date_note": "Joseon Wangjo Sillok (Veritable Records of the Joseon Dynasty), year 2 of Taejong",
+      "location": "Hanseong (modern Seoul), Joseon",
+      "description": "Court astronomers record a 'red cloud spanning the northern sky, like flaming silk,' observed over multiple nights.",
+      "identification_confidence": "high",
+      "latitude_indicator": "low",
+      "cycle": null,
+      "significance": "Joseon Wangjo Sillok provides one of the most systematic pre-telescopic aurora records anywhere — daily court astronomical observations spanning 1392–1897.",
+      "sources": [
+        { "citation": "Lee, E. H., Ahn, Y. S., Yang, H. J. & Chen, K. Y. (2004). The sunspot and auroral activity cycle derived from Korean historical records of the 11th–18th century. Solar Phys. 224, 373.", "doi": "10.1007/s11207-005-4974-x" }
+      ]
+    },
+    {
+      "id": "tycho-1580",
+      "year": 1580,
+      "month": 2,
+      "day": 13,
+      "date_note": "Tycho Brahe's own observing logs, Hven",
+      "location": "Hven (Uranienborg), Denmark",
+      "description": "Tycho Brahe records an extensive aurora display from Hven during the night of February 13–14, noting colors and motion with scientific care.",
+      "identification_confidence": "high",
+      "latitude_indicator": "high",
+      "cycle": null,
+      "significance": "The first aurora observation logged by a trained astronomer with instrumented precision — a methodological bridge between historical-chronicle and modern-instrumental records.",
+      "sources": [
+        { "citation": "Dreyer, J. L. E. (1890). Tycho Brahe: A Picture of Scientific Life and Work in the Sixteenth Century. Adam & Charles Black, Edinburgh." }
+      ]
+    },
+    {
+      "id": "halley-1716",
+      "year": 1716,
+      "month": 3,
+      "day": 6,
+      "date_note": "Night of 6 March 1716 (Old Style)",
+      "location": "London, England",
+      "description": "Edmond Halley's 'An Account of the late surprizing Appearance of the Lights seen in the Air' (Phil. Trans. 1716) describes an aurora visible across the whole of Britain and much of continental Europe. Halley mapped the display and attributed it to 'magnetical effluvia.'",
+      "identification_confidence": "high",
+      "latitude_indicator": "mid",
+      "cycle": null,
+      "significance": "The first scientific monograph on aurora. Marks the revival of aurora sightings after the Maunder Minimum (aurora records in Europe had been exceptionally rare from ~1645 to 1715, which Eddy 1976 used as part of his evidence that the Sun really was quiet).",
+      "sources": [
+        { "citation": "Halley, E. (1716). An Account of the late surprizing Appearance of the Lights seen in the Air, on the Sixth of March last. Philosophical Transactions of the Royal Society of London 29, 406.", "doi": "10.1098/rstl.1714.0050" },
+        { "citation": "Eddy, J. A. (1976). The Maunder Minimum. Science 192, 1189.", "doi": "10.1126/science.192.4245.1189" }
+      ]
+    },
+    {
+      "id": "hayakawa-1770",
+      "year": 1770,
+      "month": 9,
+      "day": 17,
+      "date_note": "17–18 September 1770 (Gregorian); multi-night storm continuing through the 19th.",
+      "location": "East Asia (Japan, Korea, China), Europe, North America",
+      "description": "The most widely recorded extreme aurora event before Carrington. Japanese diaries record 'red skies' visible at low geomagnetic latitudes for multiple consecutive nights; contemporaneous Chinese, Korean, European, and North American records confirm global scope.",
+      "identification_confidence": "high",
+      "latitude_indicator": "low",
+      "cycle": 3,
+      "significance": "Argued by Hayakawa et al. 2017 to be comparable to or larger than the 1859 Carrington Event in intensity. Over 100 independent sightings catalogued across four continents, with aurora reported at geomagnetic latitudes below 20°. The pre-Carrington benchmark.",
+      "sources": [
+        { "citation": "Hayakawa, H. et al. (2017). Long-lasting extreme magnetic storm activities in 1770 found in historical documents. ApJ Letters 850, L31.", "doi": "10.3847/2041-8213/aa9661" },
+        { "citation": "Love, J. J. (2018). The electric storm of November 1882. Space Weather 16, 37." }
+      ]
+    },
+    {
+      "id": "hayakawa-1774",
+      "year": 1774,
+      "month": 1,
+      "day": 17,
+      "date_note": "16–18 January 1774 (Gregorian)",
+      "location": "East Asia, North America",
+      "description": "An extreme low-latitude aurora event recorded in Japanese, Chinese, and North American colonial records. Less globally documented than 1770 but comparable in latitude reach.",
+      "identification_confidence": "high",
+      "latitude_indicator": "low",
+      "cycle": 3,
+      "significance": "Shows that SC3 (1775 peak) produced at least two Carrington-class candidate events within four years — a pattern consistent with the cycle's high amplitude (peak SSN ~264).",
+      "sources": [
+        { "citation": "Hayakawa, H. et al. (2018). A great space weather event in February 1730. Astron. Astrophys. 616, A177.", "doi": "10.1051/0004-6361/201832735" },
+        { "citation": "Hayakawa, H. et al. (2020). The extreme space weather event in September 1909. MNRAS 497, 690." }
+      ]
+    },
+    {
+      "id": "richardson-1839",
+      "year": 1839,
+      "month": 9,
+      "day": 3,
+      "date_note": "3–4 September 1839",
+      "location": "Europe, North America",
+      "description": "A major low-latitude aurora visible across Europe and eastern North America, coincident with a geomagnetic disturbance recorded on Gauss's early magnetometers at Göttingen.",
+      "identification_confidence": "high",
+      "latitude_indicator": "low",
+      "cycle": 8,
+      "significance": "Among the earliest events with both a chronicle-class aurora record AND a contemporary magnetometer trace — the methodological precursor to the Carrington–Colaba–Kew observations 20 years later.",
+      "sources": [
+        { "citation": "Nevanlinna, H. (2008). On geomagnetic variations during the August–September storms of 1859. Adv. Space Res. 42, 171.", "doi": "10.1016/j.asr.2008.01.002" }
+      ]
+    },
+    {
+      "id": "loomis-1847",
+      "year": 1847,
+      "month": 10,
+      "day": 24,
+      "date_note": "24–25 October 1847",
+      "location": "North America, Europe",
+      "description": "A major aurora visible across Europe and the northern United States, reported by Elias Loomis (Yale) and contemporaries, with disruption to magnetic compass readings on telegraph test lines.",
+      "identification_confidence": "high",
+      "latitude_indicator": "mid",
+      "cycle": 9,
+      "significance": "Last major documented pre-telegraph aurora before the 1859 Carrington Event. Loomis's later analysis (1860) used this and other events to characterize the auroral oval — foundational to modern aurora science.",
+      "sources": [
+        { "citation": "Loomis, E. (1860). The great auroral exhibition of August 28th to September 4th, 1859. American Journal of Science 30, 339." }
+      ]
+    }
+  ]
+}

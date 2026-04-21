@@ -90,6 +90,27 @@ Hand-curated catalog of major documented solar and geomagnetic events, 1859–pr
 | `effects`           | array        | List of documented real-world effects                                |
 | `sources`           | array        | Citations — papers, agency reports, observational logs               |
 
+### `data/events/aurora_observations.json`
+
+Pre-instrumental and early-instrumental aurora observations identified in peer-reviewed paleoaurora literature. Earliest accepted entry: ~660 BCE (Assyrian cuneiform). Latest entry: 1847 CE (immediate pre-Carrington). Dates become progressively less certain going back; BCE and early CE entries are calendar-year approximate. Cannot be used for quantitative space-weather reconstruction — only the lowest-latitude reach of visible aurora gives a qualitative storm-strength indicator.
+
+| field                         | type        | description                                                                                 |
+|-------------------------------|-------------|---------------------------------------------------------------------------------------------|
+| `id`                          | string      | Stable slug                                                                                 |
+| `year`                        | int         | Calendar year; negative for BCE                                                             |
+| `month`                       | int\|null   | 1–12 when known, else `null`                                                                |
+| `day`                         | int\|null   | 1–31 when known, else `null`                                                                |
+| `date_note`                   | string      | Freeform note on date precision (e.g. `range 660–655 BCE`)                                  |
+| `location`                    | string      | Approximate region of observation                                                           |
+| `description`                 | string      | Short paraphrase or translated excerpt of the original record                               |
+| `identification_confidence`   | enum        | `high`, `medium`, `low`                                                                     |
+| `latitude_indicator`          | enum        | `low`, `mid`, `high` — broad geomagnetic-latitude band; low = extreme storm                 |
+| `cycle`                       | int\|null   | Solar cycle number if post-1755; `null` otherwise                                           |
+| `significance`                | string      | One-line rationale for inclusion                                                            |
+| `sources`                     | array       | Peer-reviewed citations for the identification                                              |
+
+The file's `_notes_on_antiquity` object documents what is *not* in the catalog: no peer-reviewed aurora identification in ancient Egyptian sources, the Bamboo Annals (~977 BCE) remains contested, and cosmogenic isotope evidence (Miyake events) provides a parallel track of evidence that sometimes cross-corroborates the written record (e.g., 774/775 CE).
+
 ## File layout
 
 - `data/daily/daily_YYYY-YYYY.csv` — 50-year CSV chunks of the daily table.
