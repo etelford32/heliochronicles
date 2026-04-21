@@ -1,0 +1,32 @@
+{
+  "_note": "Solar cycle boundaries from SIDC-SILSO's published cycle table (https://www.sidc.be/SILSO/cyclesminmax). Minima and maxima are smoothed monthly values. peak_ssn is the smoothed monthly mean SSN at the maximum, V2.0. Last reviewed 2025-Q1. SC25 is provisional until its terminating minimum is declared.",
+  "_source": "SIDC-SILSO, Royal Observatory of Belgium",
+  "_license": "CC-BY-4.0",
+  "cycles": [
+    { "cycle":  1, "min_start": "1755-02", "max": "1761-06", "min_end": "1766-06", "peak_ssn": 144.1, "duration_years": 11.3, "provisional": false },
+    { "cycle":  2, "min_start": "1766-06", "max": "1769-09", "min_end": "1775-06", "peak_ssn": 193.0, "duration_years":  9.0, "provisional": false },
+    { "cycle":  3, "min_start": "1775-06", "max": "1778-05", "min_end": "1784-09", "peak_ssn": 264.3, "duration_years":  9.3, "provisional": false },
+    { "cycle":  4, "min_start": "1784-09", "max": "1788-02", "min_end": "1798-05", "peak_ssn": 235.3, "duration_years": 13.7, "provisional": false },
+    { "cycle":  5, "min_start": "1798-05", "max": "1805-02", "min_end": "1810-08", "peak_ssn":  82.0, "duration_years": 12.3, "provisional": false },
+    { "cycle":  6, "min_start": "1810-08", "max": "1816-05", "min_end": "1823-05", "peak_ssn":  81.2, "duration_years": 12.8, "provisional": false },
+    { "cycle":  7, "min_start": "1823-05", "max": "1829-11", "min_end": "1833-11", "peak_ssn": 119.2, "duration_years": 10.5, "provisional": false },
+    { "cycle":  8, "min_start": "1833-11", "max": "1837-03", "min_end": "1843-07", "peak_ssn": 244.9, "duration_years":  9.7, "provisional": false },
+    { "cycle":  9, "min_start": "1843-07", "max": "1848-02", "min_end": "1855-12", "peak_ssn": 219.9, "duration_years": 12.4, "provisional": false },
+    { "cycle": 10, "min_start": "1855-12", "max": "1860-02", "min_end": "1867-03", "peak_ssn": 186.2, "duration_years": 11.3, "provisional": false },
+    { "cycle": 11, "min_start": "1867-03", "max": "1870-08", "min_end": "1878-12", "peak_ssn": 234.0, "duration_years": 11.8, "provisional": false },
+    { "cycle": 12, "min_start": "1878-12", "max": "1883-12", "min_end": "1890-03", "peak_ssn": 124.4, "duration_years": 11.3, "provisional": false },
+    { "cycle": 13, "min_start": "1890-03", "max": "1894-01", "min_end": "1902-01", "peak_ssn": 146.5, "duration_years": 11.8, "provisional": false },
+    { "cycle": 14, "min_start": "1902-01", "max": "1906-02", "min_end": "1913-07", "peak_ssn": 107.1, "duration_years": 11.5, "provisional": false },
+    { "cycle": 15, "min_start": "1913-07", "max": "1917-08", "min_end": "1923-07", "peak_ssn": 175.7, "duration_years": 10.0, "provisional": false },
+    { "cycle": 16, "min_start": "1923-07", "max": "1928-04", "min_end": "1933-09", "peak_ssn": 130.2, "duration_years": 10.2, "provisional": false },
+    { "cycle": 17, "min_start": "1933-09", "max": "1937-04", "min_end": "1944-02", "peak_ssn": 198.6, "duration_years": 10.4, "provisional": false },
+    { "cycle": 18, "min_start": "1944-02", "max": "1947-05", "min_end": "1954-04", "peak_ssn": 218.7, "duration_years": 10.2, "provisional": false },
+    { "cycle": 19, "min_start": "1954-04", "max": "1957-10", "min_end": "1964-10", "peak_ssn": 285.0, "duration_years": 10.5, "provisional": false },
+    { "cycle": 20, "min_start": "1964-10", "max": "1968-11", "min_end": "1976-06", "peak_ssn": 156.6, "duration_years": 11.7, "provisional": false },
+    { "cycle": 21, "min_start": "1976-06", "max": "1979-12", "min_end": "1986-09", "peak_ssn": 232.9, "duration_years": 10.3, "provisional": false },
+    { "cycle": 22, "min_start": "1986-09", "max": "1989-07", "min_end": "1996-08", "peak_ssn": 212.5, "duration_years":  9.9, "provisional": false },
+    { "cycle": 23, "min_start": "1996-08", "max": "2001-11", "min_end": "2008-12", "peak_ssn": 180.3, "duration_years": 12.3, "provisional": false },
+    { "cycle": 24, "min_start": "2008-12", "max": "2014-04", "min_end": "2019-12", "peak_ssn": 116.4, "duration_years": 11.0, "provisional": false },
+    { "cycle": 25, "min_start": "2019-12", "max": "2024-08", "min_end": null,      "peak_ssn": 161.5, "duration_years": null, "provisional": true }
+  ]
+}

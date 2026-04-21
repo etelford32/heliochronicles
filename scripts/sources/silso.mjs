@@ -5,6 +5,10 @@ export const SILSO_DAILY_URL = 'https://www.sidc.be/SILSO/INFO/sndtotcsv.php';
 
 const pad2 = (n) => String(n).padStart(2, '0');
 
+// SILSO daily CSV (V2.0): semicolon-separated, 8 fields per row, no header.
+//   Y;M;D;decimal_year;SSN;stddev;n_obs;definitive
+// Sentinels: SSN=-1 means no observations; stddev=-1 means n_obs<4. definitive=1
+// is settled; definitive=0 is provisional (subject to revision).
 export function parseSilsoDaily(text) {
   const rows = [];
   const lines = text.split(/\r?\n/);
@@ -17,7 +21,7 @@ export function parseSilsoDaily(text) {
     if (parts.length < 8) {
       throw new Error(`SILSO line ${lineNo}: expected 8 semicolon fields, got ${parts.length}: ${line}`);
     }
-    const [y, m, d, decimalStr, ssnStr, stdStr, nobsStr, defStr] = parts;
+    const [y, m, d, , ssnStr, stdStr, nobsStr, defStr] = parts;
     const year = Number(y);
     const month = Number(m);
     const day = Number(d);
@@ -30,11 +34,10 @@ export function parseSilsoDaily(text) {
     const defRaw = Number(defStr);
     rows.push({
       date: `${year}-${pad2(month)}-${pad2(day)}`,
-      decimal_year: Number(decimalStr),
       ssn: ssnRaw === -1 ? null : ssnRaw,
       ssn_stddev: stdRaw === -1 ? null : stdRaw,
-      ssn_nobs: nobsRaw,
-      ssn_definitive: defRaw === 1
+      ssn_stations: nobsRaw,
+      ssn_provisional: defRaw !== 1
     });
   }
   return rows;

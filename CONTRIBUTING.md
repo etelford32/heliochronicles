@@ -7,7 +7,7 @@ merging changes is reproducibility and provenance, not cleverness.
 
 1. **Every value is sourced.** If you can't point to a URL at an institutional provider (SILSO, GFZ, NASA, NOAA, LISIRD, ISGI, CDAW), it doesn't go in.
 2. **Every file is reproducible.** `npm run build` must regenerate every file under `data/` byte-for-byte from upstream. No hand-edited CSVs.
-3. **Every table has a schema.** Add or update `schemas/<table>.schema.json` when columns change.
+3. **The spec is [`docs/DATA_DICTIONARY.md`](./docs/DATA_DICTIONARY.md).** Update it when columns change. `scripts/validate.mjs` checks that CSV headers match the spec column list in order.
 4. **Every release updates the manifest.** `data/MANIFEST.json` lists SHA-256, row count, and last-updated timestamp for each file.
 
 ## Adding a new source
